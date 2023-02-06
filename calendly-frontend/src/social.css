@@ -1,0 +1,77 @@
+.followers{
+    width: 30%;
+    display: inline-block;
+    left: 0;
+    position: absolute;
+    font-size: 30px;
+    bottom: 0;
+    cursor: pointer;
+}
+.following{
+    width: 30%;
+    display: inline-block;
+    right: 30%;
+    position: absolute;
+    bottom: 0;
+    font-size: 30px;
+    cursor: pointer;
+}
+.pfpimg-social{
+    border-radius: 100%;
+    width: 200px;
+    height: 200px;
+    display: inline-block;
+    position: absolute;
+    border: 3px solid purple;
+    left: 20px;
+    top: 5px;
+}
+.username-social{
+    width: 100%;
+    position: absolute;
+    display: inline-block;
+    bottom: 0px;
+    left: 25px;
+}
+.profile-header{
+    width: 100%;
+    height: 33%;
+    position: relative;
+}
+.sidebar{
+    height: 100vh;
+    height: auto;
+    width:30%;
+    background-color:sandybrown;
+    display: inline-block;
+  }
+.body{
+    width: 100%;
+    height: 100vh;
+}
+.social-body{
+    height:100%;
+    width:70%;
+    float:left
+}
+.pfp-username-div{
+    width:30%;
+    height:100%;
+    display: inline-block;
+    position: absolute;
+}
+.fol-div{
+    width: 50%;
+    height: 75%;
+    display: inline-block;
+    position:absolute;
+    right: 10%;
+}
+.fol-popup-social{
+    width: 50%;
+    height:50%
+}
+.follow-button{
+    border: 2px;
+    border-radius: 3px;
+}

@@ -1,0 +1,8 @@
+.sidebar{
+    height: 100vh;
+    height: auto;
+    width:30%;
+    background-color:sandybrown;
+    display: inline-block;
+    float: left;
+  }

@@ -1,0 +1,18 @@
+.sidebar{
+    height: 100vh;
+    height: auto;
+    width:30%;
+    background-color:sandybrown;
+    display: inline-block;
+    float: left;
+  }
+
+  .logout-button{
+    height:2vh;
+    width: 20%;
+  }
+
+  .settings-body{
+    height:100vh;
+    width:70%;
+  }
