@@ -1,5 +1,5 @@
 import React, { useEffect,useMemo } from 'react';
-import '../FolPopup.css'
+import '../css/FolPopup.css'
 import { faXmark} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import FriendTab from './friendtab.jsx'

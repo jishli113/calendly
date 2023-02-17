@@ -1,7 +1,7 @@
 import React from 'react';
-import "../App.css";
+import "../css/App.css";
 import {SidebarData} from "./SidebarData.js"
-import "../Sidebar.css"
+import "../css/Sidebar.css"
 import {Link} from "react-router-dom"
 import {useContext, useEffect} from 'react'
 import { UserContext } from './UserContext';

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import {Link, useNavigate} from "react-router-dom"
 import { UserContext } from './UserContext';
-import '../landing.css'
+import '../css/landing.css'
 
 const Landing = () =>{
     const {contextUsername,UCsetUsername, contextFirstname, UCsetFirstname, contextLastname, UCsetLastname, UCsetLoggedin, contextFollowers, contextFollowing, UCsetFollowers, UCsetFollowing} = useContext(UserContext)

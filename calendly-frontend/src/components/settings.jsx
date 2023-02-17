@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import Sidebar from './Sidebar';
-import '../settings.css'
+import '../css/settings.css'
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from './UserContext';
 

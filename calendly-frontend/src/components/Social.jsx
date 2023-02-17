@@ -1,7 +1,7 @@
 
-import '../social.css'
+import '../css/social.css'
 import Sidebar from './Sidebar';
-import FolPopup from './FolPopup.js'
+import FolPopup from './FolPopup.jsx'
 import { useState,useContext,useEffect } from 'react';
 import { UserContext } from './UserContext';
 import { faUserPlus, faUserCheck } from '@fortawesome/free-solid-svg-icons'

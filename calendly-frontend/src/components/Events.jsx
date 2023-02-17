@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import '../events.css'
+import '../css/events.css'
 import Sidebar from './Sidebar';
 import Calendar from 'react-calendar';
 import Select from "react-dropdown-select";

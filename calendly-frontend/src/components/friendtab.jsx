@@ -1,7 +1,7 @@
 
 import React, { Component, useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
-import '../friendtab.css'
+import '../css/friendtab.css'
 import {Link, useNavigate} from "react-router-dom"
 import Social from './Social';
 import {Route} from "react-router-dom";
