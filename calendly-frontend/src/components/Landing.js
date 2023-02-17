@@ -11,6 +11,7 @@ const Landing = () =>{
         const [username, setUsername] = useState()
         const [password, setPassword] = useState()
         const [loggedin, setLoggedIn] = useState(false)
+        const [incorrectLogin, setIncorrectLogin] = useState(false)
         const navigate = useNavigate()
 
 
@@ -35,8 +36,11 @@ const Landing = () =>{
          }
         
         const updateLoggedIn = async(data) =>{
-            console.log("landed")
-            const convertedData = separateObject(JSON.parse(JSON.stringify(data)))
+            if (data.length === 0){
+                setIncorrectLogin(true)
+            }
+            else{
+                const convertedData = separateObject(JSON.parse(JSON.stringify(data)))
             if(convertedData[0].key.password === password){
                 try {
                     const body = {"loggedin":true}
@@ -54,8 +58,11 @@ const Landing = () =>{
                     console.error(error.message)
                 }
             }
-            else{
-                console.log("Username or password are incorrect")
+            else
+            {
+                setIncorrectLogin(true)
+                console.log('wefdf')
+            }
             }
         }
 
@@ -86,6 +93,7 @@ const Landing = () =>{
                 </label>
                 <button className="landing-login-button" onClick={onLogin} > Login </button>
                 <h1>Dont have an account? <Link to="/register">Register here</Link></h1>
+                {incorrectLogin && <h1 className="iccorect-login-text">Incorrect Username or Password</h1>}
             </div>
         );
     }

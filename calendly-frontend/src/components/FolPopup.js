@@ -7,12 +7,13 @@ import {useState, useContext} from 'react'
 import { UserContext } from './UserContext';
 
 function FolPopup(props){
-    const {contextUsername,UCsetUsername, contextFirstname, UCsetFirstname, contextLastname, UCsetLastname, UCsetLoggedin, contextFollowers, contextFollowing, UCsetFollowers, UCsetFollowing} = useContext(UserContext)
     const [ppllist, setPplList] = useState()
     const [isLoading, setIsLoading] = useState(true)
 
 
     useEffect(()=>{
+        console.log("here")
+        setIsLoading(true)
         const separateObject = data => { 
             const res = [];
             const keys = Object.keys(data);
@@ -25,9 +26,8 @@ function FolPopup(props){
          };
     
         const getFolData = async(fol) =>{
-            console.log("foldata")
             const tag = fol ? "followers" : "following"
-            const response = await fetch(`http://localhost:4000/api/${tag}/${contextUsername}`,{
+            const response = await fetch(`http://localhost:4000/api/${tag}/${props.username}`,{
                 method:"GET",
                 headers:{"Content-Type":"application/json"}
             }).then((response)=>response.json())
@@ -35,18 +35,17 @@ function FolPopup(props){
         }
     
         const setFolPPlList = (data) =>{
-            console.log("setfol")
             let pplListConvertedData =  separateObject(JSON.parse(JSON.stringify(data)))
-            pplListConvertedData.map(people=>{
-                console.log(people.key)
-            })
+            console.log(pplListConvertedData)
             setPplList(pplListConvertedData)
             setIsLoading(false)
         }
-        console.log("effect")
-        console.log(isLoading)
         getFolData(props.folswitch)
     },[])
+
+    useEffect(()=>{
+        setIsLoading(false)
+    },[ppllist])
 
     return(props.trigger) ? (
             <div className="fol-popup">

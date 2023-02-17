@@ -33,7 +33,7 @@ function App() {
       <div className="App">
       <Routes>
         <Route exact path="/" element={<LoginCheck element={<Feed/>}/>}/>
-        <Route path='/social' element={<LoginCheck element = {<Social/>}/>}/>
+        <Route path='/social/:username' element={<LoginCheck element = {<Social/>}/>}/>
         <Route path='/settings' element={<LoginCheck element = {<Settings/>}/>}/>
         <Route path='/events' element={<LoginCheck element = {<Events/>}/>}/>
         <Route path='/landing' element ={<Landing/>}/>

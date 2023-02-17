@@ -62,7 +62,6 @@ app.patch('/api/users/loggedin/:username/', async(req,res) =>{
     try {
         const {username} = req.params
         const {loggedin} = req.body
-        console.log(username, loggedin)
         const operation = await pool.query(
             "UPDATE users SET loggedin = $1 WHERE username = $2",[loggedin, username]
         )
@@ -71,13 +70,54 @@ app.patch('/api/users/loggedin/:username/', async(req,res) =>{
         console.error(error.message)
     }
 })
-
-
+app.patch('/api/incfollowers/:username',async(req,res)=>{
+    try {
+        const {username} = req.params
+        const updateVals = await pool.query(
+            "UPDATE users SET followers = followers + 1 WHERE username = $1",[username]
+        )
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+app.patch('/api/incfollowing/:username',async(req,res)=>{
+    try {
+        const {username} = req.params
+        const updateVals = await pool.query(
+            "UPDATE users SET following = following + 1 WHERE username = $1",[username]
+        )
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+app.patch('/api/decfollowing/:username',async(req,res)=>{
+    try {
+        const {username} = req.params
+        const updateVals = await pool.query(
+            "UPDATE users SET following = following - 1 WHERE username = $1",[username]
+        )
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+app.patch('/api/decfollowers/:username',async(req,res)=>{
+    try {
+        const {username} = req.params
+        const updateVals = await pool.query(
+            "UPDATE users SET followers = followers - 1 WHERE username = $1",[username]
+        )
+    } catch (error) {
+        console.error(error.message)
+    }
+})
 app.delete("/api/users/:username", async(req,res)=>{
     try {
         const {username} = req.params
         const del = await pool.query(
-            "DELETE FROM users WHERE username = $1",[username])
+            "DELETE FROM followers WHERE forusername = $1; DELETE FROM following WHERE forusername = $1;",[username])
+        const del2 = await pool.query(
+            "DELETE FROM users WHERE username = $1",[username]
+        )
         const retrieveAll = await pool.query(
             "SELECT * FROM users"
         )
@@ -115,7 +155,7 @@ app.get("/api/following/:username", async(req,res)=>{
 app.post('/api/follow/:follower/:followed',async(req,res)=>{
     try {
         const {follower, followed} = req.params
-        console.log(follower, followed)
+        console.log("hedh")
         const response = await pool.query(
             "INSERT INTO following (forusername, followingusername) VALUES($1,$2)",[follower, followed]
         )
@@ -129,18 +169,21 @@ app.post('/api/follow/:follower/:followed',async(req,res)=>{
 })
 app.delete('/api/unfollow/:unfollower/:beingunfollowed',async(req,res)=>{
     try {
-        const {follower, followed} = req.params
+        const {unfollower, beingunfollowed} = req.params
         const response = await pool.query(
-            "DELETE FROM following WHERE forusername = $1 AND followingusername = $2)",[follower, followed]
+            "DELETE FROM following WHERE forusername = $1 AND followingusername = $2",[unfollower, beingunfollowed]
         )
         const response2 = await pool.query(
-            "DELETE FROM followers WHERE forusername = $2 AND followingusername = $1",[followed, follower]
+            "DELETE FROM followers WHERE forusername = $1 AND followerusername = $2",[beingunfollowed, unfollower]
         )
         res.json(response.rows)
     } catch (error) {
         console.error(error.message)
     }
 })
+
+
+
 app.get('/api/following/:username', async(req,res)=>{
     try{
         const {username} = req.params
@@ -168,9 +211,11 @@ app.get('/api/followers/:username',async(req,res)=>{
 app.get('/api/following/:forusername/:followingusername', async(req,res)=>{
     try {
         const {forusername, followingusername} = req.params
+        console.log(forusername, followingusername)
         const response = await pool.query(
         "SELECT * FROM following WHERE forusername = $1 AND followingusername = $2",[forusername, followingusername]
     )
+    res.json(response.rows)
     } catch (error) {
         console.error(error.message)
     }
@@ -179,7 +224,7 @@ app.get(`/api/followingcount/:username`,async(req,res)=>{
     try {
         const {username} = req.params
         const response = await pool.query(
-            "SELECT COUNT(forusername) FROM following WHERE forusername = $1",[username]
+            "SELECT following FROM users WHERE username = $1",[username]
         )
         res.json(response.rows)
     } catch (error) {
@@ -190,13 +235,23 @@ app.get(`/api/followercount/:username`,async(req,res)=>{
     try {
         const {username} = req.params
         const response = await pool.query(
-            "SELECT COUNT(forusername) FROM followers WHERE forusername = $1",[username]
+            "SELECT followers FROM users WHERE username = $1",[username]
         )
         res.json(response.rows)
     } catch (error) {
         console.error(error.message)
     }
 })
+// app.get('/api/follower-following-count/:username',async(req,res)=>{
+//     try {
+//         const {username} = req.params
+//         const response = await pool.query(
+//             "SELECT * FROM users WHERE username = $1",[username]
+//         )
+//     } catch (error) {
+//         console.error(error.message)
+//     }
+// })
 app.listen(4000,()=>{
     console.log("started on 4000")
 })

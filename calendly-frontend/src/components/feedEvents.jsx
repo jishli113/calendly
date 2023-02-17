@@ -10,8 +10,8 @@ const FeedEvents = (props) => {
     props.incrementLike(props.id)
 };
         return (
-    <Card>
-      <Card.Header>
+    <Card style={{marginBottom:'10px'}}>
+      <Card.Header style={{height:'4rem'}}>
         <div className="header-1">
             <img src={props.pfpimg} className="pfpimg"></img>
             <h2 className="username">{props.username}</h2>
