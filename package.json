@@ -3,8 +3,12 @@
     "eslint-plugin-react-hooks": "^4.6.0"
   },
   "dependencies": {
+    "@syncfusion/ej2-react-buttons": "^20.4.50",
+    "date-fns": "^2.29.3",
     "react-bootstrap-v5": "^1.4.0",
     "react-calendar": "^4.0.0",
-    "react-dropdown-select": "^4.9.3"
+    "react-datepicker": "^4.10.0",
+    "react-dropdown-select": "^4.9.3",
+    "react-select": "^5.7.0"
   }
 }

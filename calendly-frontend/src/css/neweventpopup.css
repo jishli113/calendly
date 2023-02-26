@@ -1,0 +1,27 @@
+.new-event-popup{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.new-event-popup-inner{
+    position: relative;
+    padding: 10%;
+    width: 100%;
+    height: 80%;
+    max-width: 80%;
+    background-color: #2E3047;
+    border-radius: 20px;
+    border-style:solid;
+    border-color: #37173d;
+}
+.event-name-form{
+    
+}
+.tag-select-div{
+    
+}

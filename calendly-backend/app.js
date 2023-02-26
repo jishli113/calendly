@@ -33,7 +33,6 @@ app.get('/api/users', async (req,res) =>{
     }
 })
 app.post('/api/users', async (req,res) =>{
-    console.log(req.method)
     try{
         const {username, firstname, lastname, loggedin, password, followers, following} = req.body
         console.log(firstname)
@@ -49,19 +48,20 @@ app.post('/api/users', async (req,res) =>{
 app.get('/api/users/:username', async(req,res)=>{
     try{
         const {username} = req.params
+        console.log("p")
         const user = await pool.query(
             "SELECT * FROM users WHERE username = $1",[username]
         )
+        console.log(user)
         res.json(user.rows)
     }
     catch(err){
         console.log(err.message)
     }
 })
-app.patch('/api/users/loggedin/:username/', async(req,res) =>{
+app.patch('/api/users/loggedin/:username/:loggedin', async(req,res) =>{
     try {
-        const {username} = req.params
-        const {loggedin} = req.body
+        const {username, loggedin} = req.params
         const operation = await pool.query(
             "UPDATE users SET loggedin = $1 WHERE username = $2",[loggedin, username]
         )
@@ -155,7 +155,6 @@ app.get("/api/following/:username", async(req,res)=>{
 app.post('/api/follow/:follower/:followed',async(req,res)=>{
     try {
         const {follower, followed} = req.params
-        console.log("hedh")
         const response = await pool.query(
             "INSERT INTO following (forusername, followingusername) VALUES($1,$2)",[follower, followed]
         )
@@ -198,11 +197,13 @@ app.get('/api/following/:username', async(req,res)=>{
 })
 app.get('/api/followers/:username',async(req,res)=>{
     try {
+        console.log("what")
         const {username} = username
         const response = await pool.query(
             "SELECT * FROM followers WHERE forusername = $1",[username]
         )
         res.json(response.rows)
+        console.log("FINISHEd")
         
     } catch (error) {
         console.log(error.message)
@@ -211,7 +212,6 @@ app.get('/api/followers/:username',async(req,res)=>{
 app.get('/api/following/:forusername/:followingusername', async(req,res)=>{
     try {
         const {forusername, followingusername} = req.params
-        console.log(forusername, followingusername)
         const response = await pool.query(
         "SELECT * FROM following WHERE forusername = $1 AND followingusername = $2",[forusername, followingusername]
     )
@@ -238,6 +238,16 @@ app.get(`/api/followercount/:username`,async(req,res)=>{
             "SELECT followers FROM users WHERE username = $1",[username]
         )
         res.json(response.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+app.get('/api/event/:username/:date', async(req,res)=>{
+    try {
+        const {username,date} = req.params
+        const response = await pool.query(
+            "SELECT * FROM events WHERE username = $1 AND date = $2",[username,date]
+        )
     } catch (error) {
         console.error(error.message)
     }

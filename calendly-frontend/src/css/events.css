@@ -2,11 +2,58 @@
     height: 100vh;
     height: auto;
     width:30%;
-    background-color:sandybrown;
     display: inline-block;
-    float: left;
   }
-  .events-page-body{
+  .events-body{
     height: 100vh;
-    width:100vh
+    width: 55%;
+    display: inline-block;
+    position:relative;
+    background-color: #2E3047;
+  }
+  .calendar-view{
+    width:100%;
+  }
+  .event-display{
+    width: 85%;
+    height:78vh;
+    position: absolute;
+    top:20%;
+    left:0;
+    right:0;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.24);
+
+  }
+  .form-select{
+    width:20%;
+    position:absolute;
+    left:20px;
+    top:20px;
+    display:block
+  }
+  .daily-view-display{
+    width:40%;
+  }
+  .events-calendar-sidebar{
+    width:15%;
+    display:inline-block;
+    position:relative;
+    height:100vh;
+    background-color: #2E3047;
+  }
+  .calendar-view{
+    width:80%;
+    position:absolute;
+    left:0;
+    right:0;
+    margin-left:auto;
+    margin-right:auto;
+    top:10%;
+  }
+  .add-event-button{
+    position:absolute;
+    top:10%;
+    right:5%
   }

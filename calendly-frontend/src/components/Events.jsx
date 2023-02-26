@@ -1,29 +1,64 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useEffect} from 'react';
 import '../css/events.css'
 import Sidebar from './Sidebar';
 import Calendar from 'react-calendar';
-import Select from "react-dropdown-select";
+import Select from 'react-select'
 import DailyView from './DailyView'
-import {getCurrentDate} from './getCurrentDate'
+import WeeklyView from './WeeklyView';
+import {Button} from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import NewEventPopUp from './NewEventPopup'
 
 const Events =() =>{
-    const dropDownOptions = ['daily', 'monthly', 'yearly']
-    const [selectedTime, setSelectedTime] = useState('daily')
-    const [selectedDay, setSelectedDay] = useState(getCurrentDate())
+    const pers = window.localStorage
+    const [selectedDay, setSelectedDay] = useState(new Date())
+    const [selectedTime, setSelectedTime] = useState((pers.getItem("selected")!=='undefined') ? pers.getItem("selected"):"daily")
+    const [isPoppedUp, setIsPoppedUp] = useState(false)
+    // useEffect(()=>{
+        
+    // },[selectedDay])
+    useEffect(()=>{
+        if (selectedTime !== undefined){
+            pers.setItem("selected",selectedTime)
+        }
+    },[selectedTime])
+    useEffect(()=>{
+        if(selectedDay !== undefined){
+            pers.setItem("selectedDay", String(selectedDay))
+        }
+    },[selectedDay])
+    useEffect(()=>{
+        console.log("adsf")
+    },[isPoppedUp])
+
+    const handleClose=()=>{
+        setIsPoppedUp(false)
+    }
     return(
         <div className="events-page-body">
             <Sidebar className="sidebar"/>
             <div className="events-body">
-                <Select options = {dropDownOptions} onChange = {(selected) => setSelectedTime(selected)}></Select>
-                <div className="event-display">
-                    {(selectedTime !== 'daily') ? 
-                    <Calendar className="calendar-view" day = {selectedDay}>
-
-                    </Calendar>:
-                    <DailyView date={selectedDay}></DailyView>
-                    }
-                </div>
+                <select className="form-select" value={selectedTime} onChange={(e)=>setSelectedTime(e.target.value)}>
+                    <option value="daily" selected>Daily</option>
+                    <option value="weekly">Weekly</option>
+                </select>
+                <Button className="add-event-button" onClick={()=>setIsPoppedUp(true)}>Event <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon></Button>
+                        {(selectedTime === 'daily') ? 
+                        <div className="event-display">
+                            <DailyView className="daily-view-display" day = {pers.getItem("selectedDay")}/>
+                        </div>
+                        :
+                        <div className='event-display'>
+                            <WeeklyView className="weekly-view-display" day={pers.getItem("selectedDay")} end={pers.getItem("weekEnd")}/>
+                        </div>
+                        }
             </div>
+            <div className="events-calendar-sidebar">
+                     <Calendar className="calendar-view">
+                        </Calendar>
+            </div>
+            {isPoppedUp && <NewEventPopUp handleClose = {handleClose}></NewEventPopUp>}
         </div>
     )
 }

@@ -2,8 +2,7 @@
     height: 100vh;
     height: auto;
     width:30%;
-    background-color:sandybrown;
-    display: inline-block;
+    background-color:#707793;
     float: left;
   }
 
@@ -15,4 +14,5 @@
   .settings-body{
     height:100vh;
     width:70%;
+    background-color: #2E3047;
   }

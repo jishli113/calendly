@@ -3,16 +3,16 @@ import {Navigate} from "react-router-dom"
 import { UserContext } from './UserContext';
 
 const LoginCheck =({element}) =>{
-    // const {contextLoggedIn} = useContext(UserContext)
+    const {contextLoggedIn} = useContext(UserContext)
     
 
-    //     return (
-    //         contextLoggedIn ? (
-    //             <>{this.state.children.element}</>
-    //         ):(
-    //             <Navigate replace = {true} to="/landing"/>
-    //         )
-    //     );
+        // return (
+        //     contextLoggedIn ? (
+        //         <>{this.state.children.element}</>
+        //     ):(
+        //         <Navigate replace = {true} to="/landing"/>
+        //     )
+        // );
     return(
         <>{element}</>
     )

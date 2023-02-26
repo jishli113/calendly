@@ -1,12 +1,12 @@
 .sidebar-title{
     display: inline-block;
     font-size: 20px;
-    color: black;
+    color:white;
 }
 .sidebar-icon{
     display: inline-block;
     margin-left: 10px;
-    color: black;
+    color:white;
 }
 .sidebar-item{
     width: 100%;
@@ -16,6 +16,8 @@
 .sidebar{
     min-height: 100vh;
     height: auto;
+    background-color: #707793;
+    overflow: hidden;
 }
 .sidebar-ul{
     list-style-type: none;
@@ -23,7 +25,7 @@
 }
 .calendly-header{
     font-size: 35px;
-    color: black;
+    color:white;
     text-decoration: none;
 }
 a:-webkit-any-link{

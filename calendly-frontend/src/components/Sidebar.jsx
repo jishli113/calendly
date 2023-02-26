@@ -13,7 +13,7 @@ function Sidebar(){
     useEffect(()=>{
         if(contextUsername !== null){
             console.log("sidebar", contextUsername)
-            pers.setItem("username", contextUsername)
+            pers.setItem("contextUsername", contextUsername)
         }
     })
     return(

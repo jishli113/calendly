@@ -4,10 +4,10 @@
     left: 0;
     width: 100%;
     height: 100vh;
-    background-color: rgba(0,0,0,0.2);
     display: flex;
     justify-content: center;
     align-items: center;
+    
 }
 .fol-popup-inner{
     position: relative;
@@ -15,13 +15,17 @@
     width: 100%;
     height: 80%;
     max-width: 640px;
-    background-color: #FFF;
+    background-color: #2E3047;
+    border-radius: 20px;
+    border-style:solid;
+    border-color: #37173d;
 }
 .fol-popup-close{
     position: absolute;
     top: 10px;
     right: 16px;
     cursor: pointer;
+    color: white;
 }
 .friendtab-popup{
     width: 100%;
@@ -30,6 +34,7 @@
 }
 .follower-or-following{
     text-align: center;
+    color:white
 }
 .fol-ppl-list{
     list-style-type: none;

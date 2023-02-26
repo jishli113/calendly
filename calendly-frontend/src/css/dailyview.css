@@ -1,3 +1,34 @@
-.daily-view-div{
-    
+.dailyview-display{
+    width: 100%;
+    height: 100%;
+}
+.arrow-left{
+    margin-left: auto;
+    margin-right: auto;
+}
+.arrow-right{
+    margin-left:auto;
+    margin-right:auto
+}
+.day-before-button{
+    position:relative;
+    left:86%
+
+}
+.day-after-button{
+    position:absolute;
+    left:92%
+}
+.switch-days-nav{
+    position:relative;
+    height: 5%;
+}
+.date-text{
+    font-size: 30px;
+    position:absolute;
+    left:20%
+}
+.dailyview-events{
+    height: 100%;
+    width:100%;
 }

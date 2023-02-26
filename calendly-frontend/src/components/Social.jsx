@@ -7,6 +7,7 @@ import { UserContext } from './UserContext';
 import { faUserPlus, faUserCheck } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import useAPICall from '../hooks/useAPICall';
 
 
 const Social =() => {
@@ -18,6 +19,13 @@ const Social =() => {
     const [following, setFollowing] = useState()
     const [isLoading, setIsLoading] = useState(true)
     const {username} = useParams()
+    const {res:nonBaseFollowing, callAPI:getNonBaseFollowingRequest} = useAPICall()
+    const {res:nonBaseData, callAPI:getNonBaseUserData} = useAPICall()
+    const {res:baseData, callAPI:getBaseUserData} = useAPICall()
+    const {res:postRet, callAPI:followRequest} = useAPICall()
+    const {res:deleteRet, callAPI:unfollowRequest} = useAPICall()
+
+    
     const pers = window.localStorage
 
     useEffect (() =>{
@@ -43,6 +51,21 @@ const Social =() => {
         }
 
     },[])
+    useEffect(()=>{
+        if (nonBaseData !== undefined){
+            updateData(nonBaseData)
+        }
+    },[nonBaseData])
+    useEffect(()=>{
+        if (nonBaseFollowing !== undefined){
+            detIsFollowing(nonBaseFollowing)
+        }
+    },[nonBaseFollowing])
+    useEffect(()=>{
+        if (baseData !== undefined){
+            updateData(baseData)
+        }
+    })
     useEffect(()=>{
         console.log(pers.getItem("contextUsername"), "fr")
         if(pers.getItem("username")!==username){
@@ -71,24 +94,16 @@ const Social =() => {
         }
 
     },[username])
-    const notBaseProcedure = async()=>{
-            await fetch(`http://localhost:4000/api/following/${pers.getItem("contextUsername")}/${username}`,
-            {
-                method:"GET",
-                headers:{"Content-Type":"application/json"}
-            }).then((response)=>response.json())
-            .then((json)=>detIsFollowing(json))
-            await fetch(`http://localhost:4000/api/users/${username}`,
-        {
-            method:"GET",
-            headers:{"Content-Type":"application/json"}
-        }).then((response) => response.json())
-        .then((json) =>updateData(json))
+    useEffect(()=>{
+
+    })
+    const notBaseProcedure =async()=>{
+            await getNonBaseFollowingRequest(`http://localhost:4000/api/following/${pers.getItem("contextUsername")}/${username}`, "GET")
+            detIsFollowing(nonBaseFollowing)
+            await getNonBaseUserData(`http://localhost:4000/api/users/${username}`, "GET")
     }
     const baseProcedure = async()=>{
-            await fetch(`http://localhost:4000/api/users/${username}`,
-            {method:"GET",
-            headers:{"Content-Type":"application/json"}}).then((response)=>response.json()).then((json)=>updateData(json))
+        await getBaseUserData(`http://localhost:4000/api/users/${username}`,"GET")
     }
     const detIsFollowing = (data) =>{
         if (data === null){
@@ -99,6 +114,7 @@ const Social =() => {
         }
     }
     const updateData = (data) =>{
+        console.log(data)
         let convertedData = separateObject(JSON.parse(JSON.stringify(data)))
         setFollowers(convertedData[0].key.followers)
         setFollowing(convertedData[0].key.following)
@@ -125,16 +141,11 @@ const Social =() => {
     const handleFollow = async(updateFollow) =>{
         setIsFollowing(updateFollow)
         if (updateFollow){
-            console.log("whas")
-            const follow = await fetch(`http://localhost:4000/api/follow/${pers.getItem("contextUsername")}/${pers.getItem("username")}`,
-            {method:'POST',
-        headers:{"Content-Type":"application/json"}})
+            followRequest(`http://localhost:4000/api/follow/${pers.getItem("contextUsername")}/${pers.getItem("username")}`, "POST")
         }
         else
         {
-            const unfollow = await fetch(`http://localhost:4000/api/unfollow/${pers.getItem("contextUsername")}/${pers.get("username")}`,
-                {method:'DELETE',
-            headers:{"Content-Type":"application/json"}})
+            unfollowRequest(`http://localhost:4000/api/unfollow/${pers.getItem("contextUsername")}/${pers.getItem("username")}`,"DELETE")
         }
     }
     const handleClose = () =>{
@@ -150,8 +161,8 @@ const Social =() => {
                         <h1 className="username-social">{username}</h1>
                     </div>
                     <div className="fol-div">
-                        <h1 className="followers" onClick={()=>openPopup(true)}>{followers}<br></br>Followers</h1>
-                        <h1 className="following" onClick={()=>openPopup(false)}>{following}<br></br>Following</h1>
+                        <h1 className="followers-text" onClick={()=>openPopup(true)}>{followers}<br></br>Followers</h1>
+                        <h1 className="following-text" onClick={()=>openPopup(false)}>{following}<br></br>Following</h1>
                         {pers.getItem("username") !== pers.getItem("contextUsername") &&
                         <div className="follow-icon-div">
                             {!isFollowing ? 

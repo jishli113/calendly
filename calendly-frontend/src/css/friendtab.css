@@ -38,3 +38,11 @@
     width: 100%;
     height: 100%;
 }
+.fol-button{
+    position:absolute;
+    right:10px;
+    bottom:6px
+}
+.friendtab-username{
+    color:white
+}

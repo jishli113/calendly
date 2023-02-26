@@ -5,43 +5,44 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import FriendTab from './friendtab.jsx'
 import {useState, useContext} from 'react'
 import { UserContext } from './UserContext';
-
+import useAPICall from '../hooks/useAPICall';
 function FolPopup(props){
     const [ppllist, setPplList] = useState()
     const [isLoading, setIsLoading] = useState(true)
-
+    const {res:fol,callAPI:getUserFolData} = useAPICall()
 
     useEffect(()=>{
         console.log("here")
         setIsLoading(true)
-        const separateObject = data => { 
-            const res = [];
-            const keys = Object.keys(data);
-            keys.forEach(key => {
-               res.push({
-                  key: data[key]
-               });
-            });
-            return res;
-         };
     
         const getFolData = async(fol) =>{
             const tag = fol ? "followers" : "following"
-            const response = await fetch(`http://localhost:4000/api/${tag}/${props.username}`,{
-                method:"GET",
-                headers:{"Content-Type":"application/json"}
-            }).then((response)=>response.json())
-            .then((json)=> setFolPPlList(json))
+            await getUserFolData(`http://localhost:4000/api/${tag}/${props.username}`, "GET")
         }
     
-        const setFolPPlList = (data) =>{
-            let pplListConvertedData =  separateObject(JSON.parse(JSON.stringify(data)))
-            console.log(pplListConvertedData)
-            setPplList(pplListConvertedData)
-            setIsLoading(false)
-        }
         getFolData(props.folswitch)
     },[])
+    useEffect(()=>{
+        if (fol !== undefined){
+            setFolPPlList(fol)
+        }
+    },[fol])
+    const setFolPPlList = (data) =>{
+        let pplListConvertedData =  separateObject(JSON.parse(JSON.stringify(data)))
+        console.log(pplListConvertedData)
+        setPplList(pplListConvertedData)
+        setIsLoading(false)
+    }
+    const separateObject = data => { 
+        const res = [];
+        const keys = Object.keys(data);
+        keys.forEach(key => {
+           res.push({
+              key: data[key]
+           });
+        });
+        return res;
+     };
 
     useEffect(()=>{
         setIsLoading(false)

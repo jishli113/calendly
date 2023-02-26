@@ -5,54 +5,58 @@ import '../css/friendtab.css'
 import {Link, useNavigate} from "react-router-dom"
 import Social from './Social';
 import {Route} from "react-router-dom";
+import { Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.css'
+import useAPICall from '../hooks/useAPICall';
 
 const FriendTab =(props) => {
         const navigate = useNavigate()
         const pers = localStorage
+        const {res:followingData, callAPI:getFollowingData} = useAPICall()
         const [isFollowing, setIsFollowing] = useState(false)
+        useEffect(()=>{
+            detIsFollowing(followingData)
+        },[followingData])
         useEffect(()=>{
             const getFolStatus = async() =>{
                 console.log(pers.getItem("contextUsername"),props.username)
-                const response = await fetch(`http://localhost:4000/api/following/${pers.getItem("contextUsername")}/${props.username}`,{
-                    method:'GET',
-                    headers:{"Content-Type":"application/json"}
-                }).then((response)=>response.json()).then((json)=>console.log(json)).then((json)=>detIsFollowing(json))
+                await getFollowingData(`http://localhost:4000/api/following/${pers.getItem("contextUsername")}/${props.username}`, "GET")
         }
-            const detIsFollowing = (data) =>{
-                if (data === null){
-                    setIsFollowing(false)
-                }
-                else{
-                    setIsFollowing(true)
-                }
-            }
             getFolStatus()
         })
+        const detIsFollowing = (data) =>{
+            if (data === undefined){
+                setIsFollowing(false)
+            }
+            else{
+                console.log(data)
+                setIsFollowing(true)
+            }
+        }
         const onExit = () =>{
             navigate(`/social/${props.username}`)
         }
         const handleFol = async() =>{
             console.log("fol")
             if (isFollowing === false){
-                const follow = await fetch(`http://localhost:4000/api/follow/${pers.getItem("contextUsername")}/${props.username}`,{
+                await fetch(`http://localhost:4000/api/follow/${pers.getItem("contextUsername")}/${props.username}`,{
                 method:'POST',
                 headers:{"Content-Type":"application/json"}
             })
             }
             else{
-                const unfollow = await fetch(`http://localhost:4000/api/unfollow/${pers.getItem("contextUsername")}/${props.username}`,{
+                await fetch(`http://localhost:4000/api/unfollow/${pers.getItem("contextUsername")}/${props.username}`,{
                 method:'DELETE',
                 headers:{"Content-Type":"application/json"}
             })
             }
         }
         return (
-                <Card className='friendtab' key={window.location.pathname} onClick={onExit} >
+                <Card style={{height:'100%', width:'100%', borderRadius:'20px', borderColor:'#3BBA9C', borderWidth:'3px', backgroundColor:'#43455C'}} key={window.location.pathname} onClick={onExit} >
                     <Card.Body className="friendtab-card-body">
                     <h1 className="friendtab-username">{props.username}</h1>
                     <img className="friendtab-pfp" src={props.pfpimg}></img>
-                    {isFollowing ? <button className='friendtab-fol-button' onClick={handleFol}>Unfollow</button> : <button className='friendtab-fol-button'>Follow</button>}
+                    {isFollowing ? <Button className='fol-button' onClick={handleFol}>Following</Button> : <Button className='fol-button'>Follow</Button>}
                     </Card.Body>
                 </Card>
         );

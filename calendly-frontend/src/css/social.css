@@ -1,4 +1,4 @@
-.followers{
+.followers-text{
     width: 30%;
     display: inline-block;
     left: 0;
@@ -6,8 +6,9 @@
     font-size: 30px;
     bottom: 0;
     cursor: pointer;
+    color:white;
 }
-.following{
+.following-text{
     width: 30%;
     display: inline-block;
     right: 30%;
@@ -15,6 +16,7 @@
     bottom: 0;
     font-size: 30px;
     cursor: pointer;
+    color:white;
 }
 .pfpimg-social{
     border-radius: 100%;
@@ -32,6 +34,7 @@
     display: inline-block;
     bottom: 0px;
     left: 25px;
+    color:white
 }
 .profile-header{
     width: 100%;
@@ -40,9 +43,8 @@
 }
 .sidebar{
     height: 100vh;
-    height: auto;
     width:30%;
-    background-color:sandybrown;
+    background-color:#707793;
     display: inline-block;
   }
 .body{
@@ -52,7 +54,8 @@
 .social-body{
     height:100%;
     width:70%;
-    float:left
+    float:left;
+    background-color: #2E3047;
 }
 .pfp-username-div{
     width:30%;
@@ -74,4 +77,5 @@
 .follow-button{
     position:relative;
     right: 3px;
+    text-shadow: 0 0 3px #000;
 }
