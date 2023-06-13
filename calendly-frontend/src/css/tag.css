@@ -1,0 +1,7 @@
+.tag-container{
+    border-radius:20px;
+    border-width: 2px;
+    border: 2px solid;
+    margin:2%;
+    cursor: pointer;
+}

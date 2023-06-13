@@ -10,9 +10,9 @@
 }
 .new-event-popup-inner{
     position: relative;
-    padding: 10%;
+    padding: 4%;
     width: 100%;
-    height: 80%;
+    height: 80vh;
     max-width: 80%;
     background-color: #2E3047;
     border-radius: 20px;
@@ -22,6 +22,40 @@
 .event-name-form{
     
 }
+.create-tag-button{
+    height:50px;
+    margin-left:3%;
+    cursor:pointer;
+
+}
 .tag-select-div{
     
+}
+.start-date-input{
+    border-radius: 15px;
+    padding: 10px;
+    margin-top: 5%;
+    display:inline-block;
+}
+.time-input{
+    border-radius:10px;
+    width: 200px;
+    height:45px;
+}
+
+.time-input-div{
+    margin-left: 35%;
+    display:inline-block;
+}
+.to-text{
+    display:inline-block;
+    margin:5px;
+}
+.popup-bottom-div{
+    margin-top: 5%;
+    position:relative
+}
+.create-event-button{
+    position:absolute;
+    right:10%;
 }

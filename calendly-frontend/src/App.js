@@ -15,6 +15,7 @@ import Settings from './components/settings';
 import Events from './components/Events';
 import Register from './components/register'
 import LoginCheck from './components/LoginCheck'
+import { ThemeProvider } from 'react-bootstrap';
 
 function App() {
 
@@ -30,6 +31,10 @@ function App() {
 
   return(
     <BrowserRouter>
+      <ThemeProvider
+    breakpoints={['xxxl', 'xxl', 'xl', 'lg', 'md', 'sm', 'xs', 'xxs']}
+    minBreakpoint="xxs"
+      >
       <div className="App">
       <Routes>
         <Route exact path="/" element={<LoginCheck element={<Feed/>}/>}/>
@@ -40,6 +45,7 @@ function App() {
         <Route path='/register' element={<Register/>}/>
       </Routes>
   </div>
+  </ThemeProvider>
   </BrowserRouter>
   )
 

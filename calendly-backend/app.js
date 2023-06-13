@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const pool = require('./db')
+const { DatabaseFillSlash } = require('react-bootstrap-icons')
 const corsOptions = {
     origin:'*',
     credentials:true,
@@ -13,7 +14,7 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
-app.use(function(req, res, next) {
+app.all('*',function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
@@ -35,7 +36,6 @@ app.get('/api/users', async (req,res) =>{
 app.post('/api/users', async (req,res) =>{
     try{
         const {username, firstname, lastname, loggedin, password, followers, following} = req.body
-        console.log(firstname)
         const newUser = await pool.query(
             "INSERT INTO users (username, firstname, lastname, loggedin, password, followers, following) VALUES($1,$2,$3,$4,$5,$6,$7)", [username,firstname,lastname,loggedin, password, followers, following]
         );
@@ -48,11 +48,9 @@ app.post('/api/users', async (req,res) =>{
 app.get('/api/users/:username', async(req,res)=>{
     try{
         const {username} = req.params
-        console.log("p")
         const user = await pool.query(
             "SELECT * FROM users WHERE username = $1",[username]
         )
-        console.log(user)
         res.json(user.rows)
     }
     catch(err){
@@ -186,6 +184,7 @@ app.delete('/api/unfollow/:unfollower/:beingunfollowed',async(req,res)=>{
 app.get('/api/following/:username', async(req,res)=>{
     try{
         const {username} = req.params
+        console.log("pdfs")
         const response = await pool.query(
             "SELECT * FROM following WHERE forusername = $1",[username]
         )
@@ -197,13 +196,11 @@ app.get('/api/following/:username', async(req,res)=>{
 })
 app.get('/api/followers/:username',async(req,res)=>{
     try {
-        console.log("what")
         const {username} = username
         const response = await pool.query(
             "SELECT * FROM followers WHERE forusername = $1",[username]
         )
         res.json(response.rows)
-        console.log("FINISHEd")
         
     } catch (error) {
         console.log(error.message)
@@ -224,7 +221,7 @@ app.get(`/api/followingcount/:username`,async(req,res)=>{
     try {
         const {username} = req.params
         const response = await pool.query(
-            "SELECT following FROM users WHERE username = $1",[username]
+            "SELECT COUNT(forusername) FROM following WHERE forusername = $1",[username]
         )
         res.json(response.rows)
     } catch (error) {
@@ -235,22 +232,22 @@ app.get(`/api/followercount/:username`,async(req,res)=>{
     try {
         const {username} = req.params
         const response = await pool.query(
-            "SELECT followers FROM users WHERE username = $1",[username]
+            "SELECT COUNT(forusername) FROM followers WHERE forusername = $1",[username]
         )
         res.json(response.rows)
     } catch (error) {
         console.error(error.message)
     }
 })
-app.get('/api/event/:username/:date', async(req,res)=>{
-    try {
-        const {username,date} = req.params
-        const response = await pool.query(
-            "SELECT * FROM events WHERE username = $1 AND date = $2",[username,date]
-        )
-    } catch (error) {
-        console.error(error.message)
-    }
+app.post('/api/createevent/:username', async(req,res)=>{
+    const {username} = req.params
+    
+})
+app.get('/api/alltags', async(req,res)=>{
+    const response = await pool.query(
+        "SELECT * FROM tags"
+    )
+    res.json(response.rows)
 })
 // app.get('/api/follower-following-count/:username',async(req,res)=>{
 //     try {
@@ -262,6 +259,97 @@ app.get('/api/event/:username/:date', async(req,res)=>{
 //         console.error(error.message)
 //     }
 // })
+app.post('/api/createtag', async(req,res)=>{
+    try {
+        const {tagName, tagcolor, username} = req.body
+        const response = await pool.query(
+            "SELECT checktag($2, $3, $1)",[username, tagName, tagcolor]
+        )
+        res.json(response.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+
+
+})
+app.get('/api/gettag', async(req,res)=>{
+    try {
+        const {tagName, selectedTagColor, username} = req.params
+        const response = await pool.query(
+            "SELECT * FROM tags WHERE username=$1 AND tag=$2 AND tagcolor=$3",[username, tagName,selectedTagColor]
+        )
+        res.json(response)
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+app.get('/api/getalltags', async(req,res)=>{
+    try {
+        const response = await pool.query(
+            "SELECT * FROM tags"
+        )
+        res.json(response.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+app.get('/api/getalltags/:username',async(req,res)=>{
+    try {
+        const {username} = req.params
+        const response = await pool.query(
+            "SELECT * FROM tags WHERE username=$1",[username]
+        )
+        res.json(response.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+app.post(`/api/createevent`, async(req,res)=>{
+    try {
+        const {dates, sh:startHour, sm:startMinute,eh:endHour, em:endMinute, eventName, username, selectedTags} = req.body
+        console.log(dates)
+        const response = await pool.query(
+            "INSERT INTO events (username, dates, starthour, startminute, endhour, endminute, eventname, selectedtags) VALUES($1, $2, $3, $4, $5, $6, $7, $8)",[username, dates, startHour, startMinute, endHour, endMinute, eventName, selectedTags]
+        )
+        res.json(response.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+app.get(`/api/getevents/:username`, async(req,res)=>{
+    try {
+        const {username} = req.params
+        const response = await pool.query(
+            "SELECT * FROM events WHERE username = $1",[username]
+        )
+        res.json(response.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+app.get(`/api/geteventnames/:username`, async(req,res)=>{
+    try {
+        const {username} = req.params
+        const response = await pool.query(
+            "SELECT eventname FROM events WHERE username = $1",[username]
+        )
+        res.json(response.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+app.get(`/api/dailyevents/:username/:date`, async(req,res)=>{
+    try {
+        const {username, date} = req.params
+        console.log(date)
+        const response = await pool.query(
+            "SELECT * FROM events WHERE username = $1 AND $2 = ANY(dates)",[username, date]
+        )
+        res.json(response.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+})
 app.listen(4000,()=>{
     console.log("started on 4000")
 })

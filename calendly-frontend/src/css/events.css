@@ -11,9 +11,6 @@
     position:relative;
     background-color: #2E3047;
   }
-  .calendar-view{
-    width:100%;
-  }
   .event-display{
     width: 85%;
     height:78vh;
@@ -44,16 +41,19 @@
     background-color: #2E3047;
   }
   .calendar-view{
-    width:80%;
+    
+  }
+  .add-event-button{
+    position:absolute;
+    top:10%;
+    right:5%
+  }
+  .calendar-sidebar-div{
+    width:90%;
     position:absolute;
     left:0;
     right:0;
     margin-left:auto;
     margin-right:auto;
     top:10%;
-  }
-  .add-event-button{
-    position:absolute;
-    top:10%;
-    right:5%
   }

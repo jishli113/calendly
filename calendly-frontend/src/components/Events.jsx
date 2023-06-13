@@ -13,11 +13,8 @@ import NewEventPopUp from './NewEventPopup'
 const Events =() =>{
     const pers = window.localStorage
     const [selectedDay, setSelectedDay] = useState(new Date())
-    const [selectedTime, setSelectedTime] = useState((pers.getItem("selected")!=='undefined') ? pers.getItem("selected"):"daily")
+    const [selectedTime, setSelectedTime] = useState((pers.getItem("selected")!=='null') ? pers.getItem("selected"):"daily")
     const [isPoppedUp, setIsPoppedUp] = useState(false)
-    // useEffect(()=>{
-        
-    // },[selectedDay])
     useEffect(()=>{
         if (selectedTime !== undefined){
             pers.setItem("selected",selectedTime)
@@ -40,11 +37,11 @@ const Events =() =>{
             <Sidebar className="sidebar"/>
             <div className="events-body">
                 <select className="form-select" value={selectedTime} onChange={(e)=>setSelectedTime(e.target.value)}>
-                    <option value="daily" selected>Daily</option>
+                    <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
                 </select>
                 <Button className="add-event-button" onClick={()=>setIsPoppedUp(true)}>Event <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon></Button>
-                        {(selectedTime === 'daily') ? 
+                        {(selectedTime === 'daily') ?
                         <div className="event-display">
                             <DailyView className="daily-view-display" day = {pers.getItem("selectedDay")}/>
                         </div>
@@ -55,8 +52,9 @@ const Events =() =>{
                         }
             </div>
             <div className="events-calendar-sidebar">
-                     <Calendar className="calendar-view">
-                        </Calendar>
+                    <div className='calendar-sidebar-div'><Calendar className="calendar-view">
+                        </Calendar></div>
+                     
             </div>
             {isPoppedUp && <NewEventPopUp handleClose = {handleClose}></NewEventPopUp>}
         </div>

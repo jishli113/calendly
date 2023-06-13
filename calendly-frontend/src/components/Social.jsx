@@ -11,17 +11,20 @@ import useAPICall from '../hooks/useAPICall';
 
 
 const Social =() => {
-    const {contextUsername,UCsetUsername, contextFirstname, UCsetFirstname, contextLastname, UCsetLastname, UCsetLoggedin, contextFollowers, contextFollowing, UCsetFollowers, UCsetFollowing} = useContext(UserContext)
+    const {contextUsername} = useContext(UserContext)
     const [open, setOpen] = useState(false)
     const [followerSwitch, setFollowerSwitch] = useState(true)
     const [isFollowing, setIsFollowing] = useState(false)
     const [followers,setFollowers] = useState()
     const [following, setFollowing] = useState()
     const [isLoading, setIsLoading] = useState(true)
+    const [isFollowingLoading, setIsFollowingLoading] = useState(true)
     const {username} = useParams()
     const {res:nonBaseFollowing, callAPI:getNonBaseFollowingRequest} = useAPICall()
     const {res:nonBaseData, callAPI:getNonBaseUserData} = useAPICall()
     const {res:baseData, callAPI:getBaseUserData} = useAPICall()
+    const {res:followerCount, callAPI:getFollowerCount} = useAPICall()
+    const {res:followingCount, callAPI:getFollowingCount} = useAPICall()
     const {res:postRet, callAPI:followRequest} = useAPICall()
     const {res:deleteRet, callAPI:unfollowRequest} = useAPICall()
 
@@ -29,6 +32,8 @@ const Social =() => {
     const pers = window.localStorage
 
     useEffect (() =>{
+        console.log("changed")
+        console.log(isFollowing)
         if(pers.getItem("username")!==username){
             pers.setItem("username",username)
         }
@@ -49,27 +54,26 @@ const Social =() => {
                 notBaseProcedure()
             }
         }
-
+        refreshCount()
     },[])
     useEffect(()=>{
-        if (nonBaseData !== undefined){
-            updateData(nonBaseData)
+        if (followerCount !== undefined){
+            setFollowers(parseInt((followerCount[0])["count"]))
         }
-    },[nonBaseData])
+    },[followerCount])
+    useEffect(()=>{
+        if (followingCount !== undefined){
+            setFollowing(parseInt((followingCount[0])["count"]))
+        }
+    },[followingCount])
     useEffect(()=>{
         if (nonBaseFollowing !== undefined){
             detIsFollowing(nonBaseFollowing)
         }
     },[nonBaseFollowing])
     useEffect(()=>{
-        if (baseData !== undefined){
-            updateData(baseData)
-        }
-    })
-    useEffect(()=>{
         console.log(pers.getItem("contextUsername"), "fr")
         if(pers.getItem("username")!==username){
-            console.log("what")
             pers.setItem("username",username)
         }
         setOpen(false)
@@ -85,18 +89,18 @@ const Social =() => {
             }
         }
         else{
-            if(pers.getItem("base") === 'true'){
+            if(pers.getItem("username") === pers.getItem("contextUsername")){
+                pers.setItem("base", true)
                 baseProcedure()
             }
             else{
+                pers.setItem("base", false)
                 notBaseProcedure()
             }
         }
+        refreshCount()
 
     },[username])
-    useEffect(()=>{
-
-    })
     const notBaseProcedure =async()=>{
             await getNonBaseFollowingRequest(`http://localhost:4000/api/following/${pers.getItem("contextUsername")}/${username}`, "GET")
             detIsFollowing(nonBaseFollowing)
@@ -106,32 +110,16 @@ const Social =() => {
         await getBaseUserData(`http://localhost:4000/api/users/${username}`,"GET")
     }
     const detIsFollowing = (data) =>{
-        if (data === null){
+        setIsFollowingLoading(true)
+        if (Object.keys(data).length == 0){
             setIsFollowing(false)
         }
         else{
             setIsFollowing(true)
         }
+        setIsFollowingLoading(false)
     }
-    const updateData = (data) =>{
-        console.log(data)
-        let convertedData = separateObject(JSON.parse(JSON.stringify(data)))
-        setFollowers(convertedData[0].key.followers)
-        setFollowing(convertedData[0].key.following)
-        setIsLoading(false)
 
-    } 
-
-    const separateObject = data => {
-        const res = [];
-        const keys = Object.keys(data);
-        keys.forEach(key => {
-           res.push({
-              key: data[key]
-           }); 
-        });
-        return res;
-     };
 
     const openPopup = (fol) => {
         setOpen(!open)
@@ -142,14 +130,24 @@ const Social =() => {
         setIsFollowing(updateFollow)
         if (updateFollow){
             followRequest(`http://localhost:4000/api/follow/${pers.getItem("contextUsername")}/${pers.getItem("username")}`, "POST")
+            setFollowers(followers + 1)
         }
         else
         {
             unfollowRequest(`http://localhost:4000/api/unfollow/${pers.getItem("contextUsername")}/${pers.getItem("username")}`,"DELETE")
+            setFollowers(followers - 1)
         }
     }
     const handleClose = () =>{
         setOpen(!open)
+        refreshCount()
+    }
+    async function refreshCount(){
+        console.log(pers.getItem("base"))
+        setIsLoading(true)
+        await getFollowerCount(`http://localhost:4000/api/followercount/${(pers.getItem("username")===pers.getItem("contextUsername"))?pers.getItem("contextUsername"):pers.getItem("username")}`,"GET")
+        await getFollowingCount(`http://localhost:4000/api/followingcount/${(pers.getItem("username")===pers.getItem("contextUsername"))?pers.getItem("contextUsername"):pers.getItem("username")}`,"GET")
+        setIsLoading(false)
     }
         return (
                 <div className='body' >
@@ -165,9 +163,9 @@ const Social =() => {
                         <h1 className="following-text" onClick={()=>openPopup(false)}>{following}<br></br>Following</h1>
                         {pers.getItem("username") !== pers.getItem("contextUsername") &&
                         <div className="follow-icon-div">
-                            {!isFollowing ? 
+                            {!isFollowingLoading ? (!isFollowing ? 
                                            <FontAwesomeIcon className="follow-button"icon={faUserPlus} onClick={()=>handleFollow(true)}/>
-                                           :<FontAwesomeIcon className="follow-button"icon={faUserCheck} onClick={()=>handleFollow(false)}/>}
+                                           :<FontAwesomeIcon className="follow-button"icon={faUserCheck} onClick={()=>handleFollow(false)}/>):<></>}
                         </div>
                         }
                     </div>

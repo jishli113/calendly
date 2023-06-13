@@ -1,0 +1,10 @@
+.tag-color-picker-wrap{
+    height: 100%;
+    width: 100%;
+    position:fixed;
+    left:0;
+    bottom:0;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}

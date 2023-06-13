@@ -13,6 +13,7 @@ const Landing = () =>{
         const [loggedin, setLoggedIn] = useState(false)
         const [incorrectLogin, setIncorrectLogin] = useState(false)
         const navigate = useNavigate()
+        const pers = window.localStorage
 
 
 
@@ -28,9 +29,11 @@ const Landing = () =>{
          };
 
          const onExit = (convertedData) =>{
+            console.log("here")
             UCsetUsername(convertedData[0].key.username)
             UCsetFirstname(convertedData[0].key.firstname)
             UCsetLastname(convertedData[0].key.lastname)
+            pers.setItem("contextUsername", convertedData[0].key.username)
             UCsetLoggedin(convertedData[0].key.loggedin)
             navigate('/',{replace:true});
          }
@@ -42,26 +45,11 @@ const Landing = () =>{
             else{
                 const convertedData = separateObject(JSON.parse(JSON.stringify(data)))
             if(convertedData[0].key.password === password){
-                try {
-                    const body = {"loggedin":true}
-                    console.log(body)
-                    const r = await fetch(`http://localhost:4000/api/users/loggedin/${username}`,{
-                        method:"PATCH",
-                        headers:{"Content-Type":"application/json"},
-                        body:JSON.stringify(body)
-                    }).then(
-                        onExit(convertedData)
-                    )
-                    console.log(r)
-                    
-                } catch (error) {
-                    console.error(error.message)
-                }
+                onExit(convertedData)
             }
             else
             {
                 setIncorrectLogin(true)
-                console.log('wefdf')
             }
             }
         }

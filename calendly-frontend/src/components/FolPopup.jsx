@@ -12,14 +12,7 @@ function FolPopup(props){
     const {res:fol,callAPI:getUserFolData} = useAPICall()
 
     useEffect(()=>{
-        console.log("here")
         setIsLoading(true)
-    
-        const getFolData = async(fol) =>{
-            const tag = fol ? "followers" : "following"
-            await getUserFolData(`http://localhost:4000/api/${tag}/${props.username}`, "GET")
-        }
-    
         getFolData(props.folswitch)
     },[])
     useEffect(()=>{
@@ -29,9 +22,13 @@ function FolPopup(props){
     },[fol])
     const setFolPPlList = (data) =>{
         let pplListConvertedData =  separateObject(JSON.parse(JSON.stringify(data)))
-        console.log(pplListConvertedData)
         setPplList(pplListConvertedData)
         setIsLoading(false)
+    }
+    const getFolData = async(fol) =>{
+        const tag = fol ? "followers" : "following"
+        console.log("1")
+        await getUserFolData(`http://localhost:4000/api/${tag}/${props.username}`, "GET")
     }
     const separateObject = data => { 
         const res = [];

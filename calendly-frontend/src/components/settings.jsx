@@ -10,9 +10,12 @@ const Settings = () => {
     const {res, callAPI:logOutUpdate} = useAPICall()
 
     useEffect(()=>{
-        navigate('/landing')
+        if (res !== undefined){
+            navigate('/landing')
+        }
     },[res])
     const logout = async(e) =>{
+        console.log("wut")
         e.preventDefault()
         try {
             await logOutUpdate(`http://localhost:4000/api/users/loggedin/${contextUsername}/false`, "PATCH")

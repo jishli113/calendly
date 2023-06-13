@@ -13,7 +13,9 @@ const FriendTab =(props) => {
         const navigate = useNavigate()
         const pers = localStorage
         const {res:followingData, callAPI:getFollowingData} = useAPICall()
+        const {res:followRes, callAPI:callFollow} = useAPICall()
         const [isFollowing, setIsFollowing] = useState(false)
+        const {res:unfollowRes, callAPI: callUnfollow} = useAPICall()
         useEffect(()=>{
             detIsFollowing(followingData)
         },[followingData])
@@ -39,16 +41,10 @@ const FriendTab =(props) => {
         const handleFol = async() =>{
             console.log("fol")
             if (isFollowing === false){
-                await fetch(`http://localhost:4000/api/follow/${pers.getItem("contextUsername")}/${props.username}`,{
-                method:'POST',
-                headers:{"Content-Type":"application/json"}
-            })
+                await callFollow(`http://localhost:4000/api/follow/${pers.getItem("contextUsername")}/${props.username}`, "POST")
             }
             else{
-                await fetch(`http://localhost:4000/api/unfollow/${pers.getItem("contextUsername")}/${props.username}`,{
-                method:'DELETE',
-                headers:{"Content-Type":"application/json"}
-            })
+                await callUnfollow(`http://localhost:4000/api/unfollow/${pers.getItem("contextUsername")}/${props.username}`,'DELETE')
             }
         }
         return (
