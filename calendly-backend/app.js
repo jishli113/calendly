@@ -341,7 +341,6 @@ app.get(`/api/geteventnames/:username`, async(req,res)=>{
 app.get(`/api/dailyevents/:username/:date`, async(req,res)=>{
     try {
         const {username, date} = req.params
-        console.log(date)
         const response = await pool.query(
             "SELECT * FROM events WHERE username = $1 AND $2 = ANY(dates)",[username, date]
         )

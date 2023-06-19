@@ -1,3 +1,6 @@
+input[type="file"]{
+    display:none;
+}
 .new-event-popup{
     position: fixed;
     top: 0;
@@ -58,4 +61,16 @@
 .create-event-button{
     position:absolute;
     right:10%;
+}
+.event-image-label{
+    height: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.story-border-div{
+    border-radius:50%/50%;
+    width:100%;
+    height:100%;
+    border: 3px solid black;
+
 }

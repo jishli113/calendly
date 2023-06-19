@@ -1,18 +1,18 @@
 .sidebar{
     height: 100vh;
     height: auto;
-    width:30%;
+    width:15%;
     display: inline-block;
   }
   .events-body{
     height: 100vh;
-    width: 55%;
+    width: 70%;
     display: inline-block;
     position:relative;
     background-color: #2E3047;
   }
   .event-display{
-    width: 85%;
+    width: 95%;
     height:78vh;
     position: absolute;
     top:20%;

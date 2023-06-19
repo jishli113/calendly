@@ -9,10 +9,11 @@ import {Button} from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import NewEventPopUp from './NewEventPopup'
+import { Temporal } from '@js-temporal/polyfill';
 
 const Events =() =>{
     const pers = window.localStorage
-    const [selectedDay, setSelectedDay] = useState(new Date())
+    const [selectedDay, setSelectedDay] = useState(new Temporal.Now.plainDateISO())
     const [selectedTime, setSelectedTime] = useState((pers.getItem("selected")!=='null') ? pers.getItem("selected"):"daily")
     const [isPoppedUp, setIsPoppedUp] = useState(false)
     useEffect(()=>{
@@ -22,7 +23,8 @@ const Events =() =>{
     },[selectedTime])
     useEffect(()=>{
         if(selectedDay !== undefined){
-            pers.setItem("selectedDay", String(selectedDay))
+            pers.setItem("selectedDay",selectedDay.toString())
+            console.log(selectedDay.toString(), "selectedDay init ")
         }
     },[selectedDay])
     useEffect(()=>{

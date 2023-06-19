@@ -32,3 +32,40 @@
     height: 100%;
     width:100%;
 }
+.dailyview-card-time-row{
+    display:inline;
+}
+.dailyview-card-header{
+    display:flex;
+    flex-direction: row;
+}
+.dailyview-card-time-text{
+    position:absolute;
+    right: 1%;
+}
+.dailyview-card-event-text{
+    font-size: 30px;
+}
+.event-status{
+    font-size: 20px;
+
+}
+.eventcard{
+    width: 100%;
+    height: 80%;
+}
+.status-circle-icon{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.daily-view-card-parent-row{
+    text-align: center;
+}
+.status-circle-col{
+    margin-top:auto;
+    margin-bottom: auto;
+}
+.daily-event-col{
+    margin-top:auto;
+    margin-bottom:auto;
+}

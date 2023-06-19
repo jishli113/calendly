@@ -1,0 +1,29 @@
+.weeklyview-col-div{
+    border: black solid 2px;
+    height:100%;
+    width:100%;
+}
+.parent-row{
+    height:100%
+}
+.weeklyview-card{
+    margin-top: 6%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+}
+.weeklyview-col{
+    padding-right:0;
+    padding-left:0;
+    padding-bottom: 0;
+}
+.card-eventname{
+    font-size: 15px;
+}
+.weekly-dates{
+    font-size:15px;
+    color: white;
+}
+.weekly-view-container{
+    height:100%;
+}

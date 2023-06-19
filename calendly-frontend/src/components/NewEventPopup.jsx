@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect, useContext} from 'react';
+import React, { Component, useState, useEffect, useContext, useRef} from 'react';
 import '../css/neweventpopup.css'
 import Form from 'react-bootstrap/Form'
 import Select from 'react-dropdown-select';
@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faXmark, faPlusCircle, faPlus } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-date-picker';
-import { Row, Col, Container } from 'react-bootstrap';
+import { Row, Col, Container, Image } from 'react-bootstrap';
 import useAPICallBody from '../hooks/useAPICallBody';
 import useAPICall from '../hooks/useAPICall';
 import { UserContext } from './UserContext';
@@ -14,6 +14,7 @@ import NewTagPopup from './NewTagPopup';
 import TagScrollView from './TagScrollview';
 import { Dropdown } from 'react-bootstrap';
 import { Temporal } from '@js-temporal/polyfill';
+import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 const NewEventPopup=(props)=>{
     const pers = window.localStorage
@@ -34,6 +35,11 @@ const NewEventPopup=(props)=>{
     const [invalidDate, setInvalidDate] = useState(false)
     const [selectedTags, setSelectedTags] = useState([])
     const [recurringEventName, setRecurringEventName] = useState(false)
+    const [nextPage, setNextPage] = useState(false)
+    const [selectedImage, setSelectedImage] = useState(false)
+    const imageInputRef = useRef(null)
+    const [image, setImage] = useState()
+
     
     useEffect(()=>{
         if (contextUsername !== null){
@@ -77,16 +83,24 @@ const NewEventPopup=(props)=>{
     async function getExistingEvents(){
         await getEvents(`http://localhost:4000/api/geteventnames/${username}`)
     }
-    async function checkCreateEvent(){
-        for (let i = 0; i < eventNames.length; i = i + 1){
+    async function checkNext(){
+        for (let i = 0; i < eventNames.length; i++){
             if (eventNames[i].eventname == eventName){
                 setRecurringEventName(false)
                 break
             }
         }
         setRecurringEventName(true)
-        if (eventName !== "" && startDate !== undefined && endDate !== undefined && startTime !== undefined && endTime !== undefined)
-        {
+        if (eventName === "" || startDate === undefined || endDate === undefined || startTime === undefined || endTime === undefined){
+            setRequiredFields(true)
+            setNextPage(false)
+        }
+        else{
+            setRequiredFields(false)
+            setNextPage(true)
+        }
+}
+    async function checkCreateEvent(){
             const s = Temporal.PlainDate.from(startDate)
             const e = Temporal.PlainDate.from(endDate)
             if (Temporal.PlainDate.compare(s, e) == 1){
@@ -98,10 +112,6 @@ const NewEventPopup=(props)=>{
             }
 
         }
-        else{
-            setRequiredFields(true)
-        }
-    }
     async function refreshTags(){
         await getTags(`http://localhost:4000/api/getalltags/${username}`)
     }
@@ -177,11 +187,25 @@ const NewEventPopup=(props)=>{
             props.handleClose()
         }
     }
+    const handleInputClick = ()=>{
+        console.log(imageInputRef, "img")
+        if (imageInputRef === undefined){
+            return
+        }
+        imageInputRef.current.click()
+    }
+    const handleImageInputChange=(event)=>{
+        setSelectedImage(true)
+        const file = event.target.files[0]
+        setImage(file)
+    }
     return(
         <div className="new-event-popup">
             <div className="new-event-popup-inner">
             <FontAwesomeIcon icon={faXmark} className="fol-popup-close" onClick={props.handleClose}></FontAwesomeIcon>
-                <Form>
+                {!nextPage ? 
+                <div>
+                    <Form>
                     <Container fluid>
                     <Row>
                         <Form.Group>
@@ -240,25 +264,35 @@ const NewEventPopup=(props)=>{
                                         <Dropdown.Item onClick={()=>setRepeats("Daily")}>
                                             Daily
                                         </Dropdown.Item>
-                                        <Dropdown.Item onClick={(e)=>setRepeats("Weekly")}>
+                                        <Dropdown.Item onClick={()=>setRepeats("Weekly")}>
                                             Weekly
                                         </Dropdown.Item>
-                                        <Dropdown.Item onClick={(e)=>setRepeats("Weekdays")}>
+                                        <Dropdown.Item onClick={()=>setRepeats("Weekdays")}>
                                             Weekdays
                                         </Dropdown.Item>
                                     </Dropdown.Menu>
                                 </Dropdown>
                         </Col>
                         <Col>
-                            <Button className="create-event-button" onClick={checkCreateEvent}>Create Event</Button>
+                            <Button className="create-event-button" onClick={checkNext}>Next</Button>
                         </Col>
                     </Row>
                 </Container>
                 </Form>
                 {tagPopup && <NewTagPopup handleClose={handleTagPopUp}>
                     </NewTagPopup>}
+                </div>:  
+                <div>
+                    <Button className="add-image-button" onClick={handleInputClick}>
+                                    Upload an Image    
+                                    <FontAwesomeIcon icon={faCloudArrowUp}></FontAwesomeIcon>
+                    <input type="file" ref = {imageInputRef} onChange={(e)=>handleImageInputChange(e)}></input>
+                    </Button>
+                    {selectedImage && <Image src = " " roundedCircle ></Image>}
+                </div>}
             </div>
         </div>
     )
 }
+
 export default NewEventPopup
