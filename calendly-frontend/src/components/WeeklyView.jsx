@@ -20,12 +20,14 @@ const WeeklyView =(props)=>{
             setStartDay(Temporal.PlainDate.from(pers.getItem("selectedDay")))
         }
     },[])
+
     useEffect(()=>{
         if (startDay != undefined){
             pers.setItem("selectedDay", startDay.toString())
         }
         weekCount(Temporal.PlainDate.from(pers.getItem("selectedDay")))
     },[startDay])
+
     useEffect(()=>{
     },[weekEvents])
     async function weekCount(date){
@@ -43,6 +45,7 @@ const WeeklyView =(props)=>{
         setWeekEvents(ret)
         setWeekDates(dates)
     }
+    
     return(
         <Container fluid={true} className="weekly-view-container">
         <Row>

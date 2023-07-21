@@ -15,7 +15,7 @@ import TagScrollView from './TagScrollview';
 import { Dropdown } from 'react-bootstrap';
 import { Temporal } from '@js-temporal/polyfill';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
-
+import useAPIMultiPart from '../hooks/useAPIMultiPart.js';
 const NewEventPopup=(props)=>{
     const pers = window.localStorage
     const [eventName, setEventName] = useState("")
@@ -25,7 +25,7 @@ const NewEventPopup=(props)=>{
     const [endTime, setEndTime] = useState()
     const [tagPopup, setTagPopUp] = useState(false)
     const [repeats, setRepeats] = useState("Today Only")
-    const {res:createEventRes, callAPI: createEventCall} = useAPICallBody()
+    const {res:createEventRes, callAPI: createEventCall} = useAPIMultiPart()
     const {res:eventNames, callAPI: getEvents} = useAPICall()
     const {res:tags, callAPI:getTags} = useAPICall()
     const {contextUsername} = useContext(UserContext)
@@ -80,38 +80,39 @@ const NewEventPopup=(props)=>{
     useEffect(()=>{
             console.log(eventNames, "event")
     },[eventNames])
+    useEffect(()=>{
+
+    },[selectedImage])
     async function getExistingEvents(){
         await getEvents(`http://localhost:4000/api/geteventnames/${username}`)
     }
     async function checkNext(){
+        console.log("checknext")
+        setRecurringEventName(true)
         for (let i = 0; i < eventNames.length; i++){
             if (eventNames[i].eventname == eventName){
                 setRecurringEventName(false)
                 break
             }
         }
-        setRecurringEventName(true)
+        console.log(startTime, endTime)
         if (eventName === "" || startDate === undefined || endDate === undefined || startTime === undefined || endTime === undefined){
             setRequiredFields(true)
             setNextPage(false)
         }
         else{
-            setRequiredFields(false)
-            setNextPage(true)
-        }
-}
-    async function checkCreateEvent(){
             const s = Temporal.PlainDate.from(startDate)
             const e = Temporal.PlainDate.from(endDate)
             if (Temporal.PlainDate.compare(s, e) == 1){
                 setInvalidDate(true)
+                setNextPage(false)
             }
             else{
-                createEvents(s, e)
-                
+                setRequiredFields(false)
+                setNextPage(true)
             }
-
         }
+}
     async function refreshTags(){
         await getTags(`http://localhost:4000/api/getalltags/${username}`)
     }
@@ -146,7 +147,12 @@ const NewEventPopup=(props)=>{
             }
         }
     }
+    function removePers(key){
+        pers.removeItem(key)
+    }
+
     async function createEvents(sd, ed){
+        console.log(startTime)
         const sh = parseInt(startTime.substring(0,2))
         const sm = parseInt(startTime.substring(3,5))
         const eh = parseInt(endTime.substring(0,2))
@@ -181,9 +187,23 @@ const NewEventPopup=(props)=>{
                 s = s.add({days:1})
             }
         }
-        const body = {dates, sh, sm,eh, em, eventName, username, selectedTags}
-        await createEventCall(`http://localhost:4000/api/createevent`, "POST", body)
-        if(!recurringEventName){
+        const formData = new FormData()
+        console.log(dates)
+        formData.append("dates",JSON.stringify(dates))
+        formData.append("sh", sh)
+        formData.append("sm", sm)
+        formData.append("eh", eh)
+        formData.append("em", em)
+        formData.append("eventName", eventName)
+        formData.append("username", username)
+        formData.append("selectedTags", JSON.stringify(selectedTags))
+        formData.append("eventImage", selectedImage && image)
+        await createEventCall(`http://localhost:4000/api/createevent`, "POST", formData)
+        if(recurringEventName){
+            removePers("startTime")
+            removePers("endTime")
+            removePers("startDate")
+            removePers("endDate")
             props.handleClose()
         }
     }
@@ -215,11 +235,11 @@ const NewEventPopup=(props)=>{
                     </Row>
                     <Row className="my-3">
                         <Col>
-                            <Form.Label>Time</Form.Label>
-                            <Form.Control type="time" onChange={(e)=>{console.log(e.target.value)}}></Form.Control>
+                            <Form.Label>Start Time</Form.Label>
+                            <Form.Control type="time" onChange={(e)=>{setStartTime(e.target.value)}}></Form.Control>
                         </Col>
                         <Col>
-                            <Form.Label>Time</Form.Label>
+                            <Form.Label>End Time</Form.Label>
                             <Form.Control type="time" onChange={(e)=>{setEndTime(e.target.value)}}></Form.Control>
                         </Col>
                     </Row>
@@ -274,7 +294,7 @@ const NewEventPopup=(props)=>{
                                 </Dropdown>
                         </Col>
                         <Col>
-                            <Button className="create-event-button" onClick={checkNext}>Next</Button>
+                            <Button className="create-event-button" onClick={()=>checkNext()}>Next</Button>
                         </Col>
                     </Row>
                 </Container>
@@ -282,14 +302,22 @@ const NewEventPopup=(props)=>{
                 {tagPopup && <NewTagPopup handleClose={handleTagPopUp}>
                     </NewTagPopup>}
                 </div>:  
-                <div>
-                    <Button className="add-image-button" onClick={handleInputClick}>
-                                    Upload an Image    
-                                    <FontAwesomeIcon icon={faCloudArrowUp}></FontAwesomeIcon>
-                    <input type="file" ref = {imageInputRef} onChange={(e)=>handleImageInputChange(e)}></input>
-                    </Button>
-                    {selectedImage && <Image src = " " roundedCircle ></Image>}
-                </div>}
+                <Container className="upload-image-div">
+                    <Row>
+                        <Button className="add-image-button" onClick={handleInputClick}>
+                                        Upload an Image    
+                                        <FontAwesomeIcon icon={faCloudArrowUp}></FontAwesomeIcon>
+                        <input type="file" ref = {imageInputRef} onChange={(e)=>handleImageInputChange(e)} accept="image/*" name="eventImage"></input>
+                        </Button>
+                        
+                    </Row>
+                    <Row className="my-5">
+                        {selectedImage ? <Image src = {URL.createObjectURL(image)} className="uploaded-image"></Image>:<h1>No Selected Image</h1>}
+                    </Row>
+                    <Row className="my-5">
+                        <Button onClick={()=>createEvents(Temporal.PlainDate.from(startDate), Temporal.PlainDate.from(endDate))} className="create-event-button">Create Event</Button>
+                    </Row>
+                </Container>}
             </div>
         </div>
     )

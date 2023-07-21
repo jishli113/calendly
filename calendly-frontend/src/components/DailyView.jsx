@@ -10,6 +10,7 @@ import '../css/dailyview.css'
 import '../css/dailyviewcard.css'
 import { Card, Col, Row, Image } from 'react-bootstrap';
 const DailyView=(props)=>{
+
     const pers = window.localStorage
     const {contextUsername} = useContext(UserContext)
     const [currentDate, setCurrentDate] = useState(Temporal.Now.plainDateISO())
@@ -21,33 +22,39 @@ const DailyView=(props)=>{
     useEffect(()=>{
         console.log("daynames")
  },[dayNames])
+
     useEffect(()=>{
         if (currentDate !== undefined){
             pers.setItem("selectedDay", currentDate.toString())
         }
         getCurrentEvents()
     },[currentDate])
+
     useEffect(()=>{
         if(currentDate === undefined){
             setCurrentDate(Temporal.PlainDate.from(pers.getItem("selectedDay")))
         }
     },[])
+
     async function getCurrentEvents(){
         setIsLoading(true)
         await(callGetEvents(`http://localhost:4000/api/dailyevents/${pers.getItem("contextUsername")}/${currentDate.toString()}`, "GET"))
         setIsLoading(false)
         console.log(events)
     }
+
     const nextDay=()=>{
         setCurrentDate(currentDate => currentDate.add({days:1}))
     }
+
     const prevDay=()=>{
         setCurrentDate(currentDate => currentDate.add({days:-1}))
     }
+
     function refactorDate(){
             return currentDate.toString()
-
     }
+
     return(
         <div className="dailyview-display">
              <Navbar bg="light" className="switch-days-nav">
@@ -63,12 +70,15 @@ const DailyView=(props)=>{
         </div>
     )
 }
+
 export default DailyView
 
 const DailyViewCard=(props)=>{
+
     useEffect(()=>{
         console.log(props.props)
     },[])
+
     return(
         <Container>
         <Row className='daily-view-card-parent-row'>
@@ -86,7 +96,7 @@ const DailyViewCard=(props)=>{
                     <p className="dailyview-card-time-text">{`${props.props.starthour}:${props.props.startminute} - ${props.props.endhour}:${props.props.endminute}`}</p>
                 </Card.Header>
                 <Card.Body>
-                    <Image roundedCircle>
+                    <Image roundedCircle src={props.props.eventurl} className="event-image" size={20}>
 
                     </Image>
                 </Card.Body>

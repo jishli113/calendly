@@ -4,19 +4,25 @@
     "tailwindcss": "^3.3.2"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.373.0",
+    "@aws-sdk/s3-request-presigner": "^3.374.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@js-temporal/polyfill": "^0.4.3",
     "@mui/material": "^5.13.3",
     "@syncfusion/ej2-react-buttons": "^20.4.50",
+    "aws-sdk": "^2.1401.0",
     "date-fns": "^2.29.3",
+    "dotenv": "^16.3.1",
     "material-ui": "^0.20.2",
+    "multer": "^1.4.5-lts.1",
     "react-bootstrap-icons": "^1.10.2",
     "react-bootstrap-v5": "^1.4.0",
     "react-calendar": "^4.0.0",
     "react-color": "^2.19.3",
     "react-date-picker": "^9.2.0",
     "react-dropdown-select": "^4.9.3",
-    "react-select": "^5.7.0"
+    "react-select": "^5.7.0",
+    "save": "^2.9.0"
   }
 }

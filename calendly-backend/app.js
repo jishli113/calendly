@@ -1,9 +1,38 @@
 
 const express = require('express')
+const multer = require('multer')
+const crypto = require('crypto')
 const app = express()
+app.use(express.json())
 const cors = require('cors')
-const pool = require('./db')
-const { DatabaseFillSlash } = require('react-bootstrap-icons')
+const pool = require('./db') 
+const { PutObjectCommand, S3Client, GetObjectCommand } = require("@aws-sdk/client-s3")
+const dotenv = require('dotenv')
+dotenv.config()
+
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+
+
+
+const storage = multer.memoryStorage()
+const upload = multer({storage: storage})
+
+const randomName = (bytes = 32) => crypto.randomBytes(bytes).toString()
+
+
+const bucketName = process.env.AWS_BUCKET_NAME
+const bucketRegion = process.env.AWS_BUCKET_REGION
+const accessKey = process.env.AWS_ACCESS_KEY
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
+
+const s3 = new S3Client({
+    credentials:{
+        accessKeyId:accessKey,
+        secretAccessKey: secretAccessKey,
+    },
+    region: bucketRegion
+});
+
 const corsOptions = {
     origin:'*',
     credentials:true,
@@ -239,10 +268,6 @@ app.get(`/api/followercount/:username`,async(req,res)=>{
         console.error(error.message)
     }
 })
-app.post('/api/createevent/:username', async(req,res)=>{
-    const {username} = req.params
-    
-})
 app.get('/api/alltags', async(req,res)=>{
     const response = await pool.query(
         "SELECT * FROM tags"
@@ -304,12 +329,27 @@ app.get('/api/getalltags/:username',async(req,res)=>{
         console.error(error.message)
     }
 })
-app.post(`/api/createevent`, async(req,res)=>{
+app.post(`/api/createevent`, upload.single('eventImage'), async(req,res)=>{
     try {
+        console.log("adsgasgas")
+        console.log(req.body, "body")
+        console.log(req.file, "file")
         const {dates, sh:startHour, sm:startMinute,eh:endHour, em:endMinute, eventName, username, selectedTags} = req.body
-        console.log(dates)
+        req.file.buffer
+        console.log(req.body)
+        let imageKey = randomName()
+        console.log("imagekey", imageKey)
+        const params = {
+            Bucket:bucketName,
+            Key:imageKey,
+            Body: req.file.buffer,
+            ContentType: req.file.mimetype,
+        }
+
+        const command = new PutObjectCommand(params)
+        await s3.send(command)
         const response = await pool.query(
-            "INSERT INTO events (username, dates, starthour, startminute, endhour, endminute, eventname, selectedtags) VALUES($1, $2, $3, $4, $5, $6, $7, $8)",[username, dates, startHour, startMinute, endHour, endMinute, eventName, selectedTags]
+            "INSERT INTO events (username, dates, starthour, startminute, endhour, endminute, eventname, selectedtags, imageKey) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)",[username, dates, startHour, startMinute, endHour, endMinute, eventName, selectedTags, imageKey]
         )
         res.json(response.rows)
     } catch (error) {
@@ -342,13 +382,25 @@ app.get(`/api/dailyevents/:username/:date`, async(req,res)=>{
     try {
         const {username, date} = req.params
         const response = await pool.query(
-            "SELECT * FROM events WHERE username = $1 AND $2 = ANY(dates)",[username, date]
+            "SELECT * FROM events WHERE username = $1 AND $2 = ANY(json_array_to_text_array(events.dates))",[username, date]
         )
+        for (const event of response.rows){
+            const getObjectParams = {
+                Bucket: bucketName,
+                Key: event.imagekey
+            }
+            const command = new GetObjectCommand(getObjectParams);
+            const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+            event.eventurl = url
+        }
+        console.log(response.rows)
         res.json(response.rows)
     } catch (error) {
         console.error(error.message)
     }
 })
+
+
 app.listen(4000,()=>{
     console.log("started on 4000")
 })
