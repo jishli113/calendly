@@ -13,7 +13,8 @@ import { Temporal } from '@js-temporal/polyfill';
 
 const Events =() =>{
     const pers = window.localStorage
-    const [selectedDay, setSelectedDay] = useState(new Temporal.Now.plainDateISO())
+    const [selectedDay, setSelectedDay] = useState(pers.getItem("selectedDay") === null ? new Temporal.Now.plainDate() : Temporal.PlainDate.from(pers.getItem("selectedDay")))
+    const [passSelectedDay, setPassSelectedDay] = useState(false)
     const [selectedTime, setSelectedTime] = useState((pers.getItem("selected")!=='null') ? pers.getItem("selected"):"daily")
     const [isPoppedUp, setIsPoppedUp] = useState(false)
     useEffect(()=>{
@@ -21,11 +22,11 @@ const Events =() =>{
             pers.setItem("selected",selectedTime)
         }
     },[selectedTime])
+
     useEffect(()=>{
-        if(selectedDay !== undefined){
-            pers.setItem("selectedDay",selectedDay.toString())
-            console.log(selectedDay.toString(), "selectedDay init ")
-        }
+        console.log(selectedDay.toString())
+        pers.setItem("selectedDay", selectedDay)
+        setPassSelectedDay(true)
     },[selectedDay])
     useEffect(()=>{
         console.log("adsf")
@@ -34,31 +35,40 @@ const Events =() =>{
     const handleClose=()=>{
         setIsPoppedUp(false)
     }
+    function handleCalendarChange(date){
+        let formatDate = `${date.getFullYear()}-${date.getMonth() + 1 < 10 && "0"}${date.getMonth() + 1}-${date.getDate() < 10 ?"0":""}${date.getDate()}`
+        // console.log(Temporal.PlainDate.from(formatDate))
+        setSelectedDay(Temporal.PlainDate.from(formatDate))
+
+    }
     return(
         <div className="events-page-body">
             <Sidebar className="sidebar"/>
-            <div className="events-body">
-                <select className="form-select" value={selectedTime} onChange={(e)=>setSelectedTime(e.target.value)}>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                </select>
-                <Button className="add-event-button" onClick={()=>setIsPoppedUp(true)}>Event <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon></Button>
-                        {(selectedTime === 'daily') ?
-                        <div className="event-display">
-                            <DailyView className="daily-view-display" day = {pers.getItem("selectedDay")}/>
-                        </div>
-                        :
-                        <div className='event-display'>
-                            <WeeklyView className="weekly-view-display" day={pers.getItem("selectedDay")} end={pers.getItem("weekEnd")}/>
-                        </div>
-                        }
-            </div>
-            <div className="events-calendar-sidebar">
-                    <div className='calendar-sidebar-div'><Calendar className="calendar-view">
-                        </Calendar></div>
-                     
-            </div>
-            {isPoppedUp && <NewEventPopUp handleClose = {handleClose}></NewEventPopUp>}
+            <div className="events-body-wrapper">
+                <div className="events-body">
+                    <select className="form-select" value={selectedTime} onChange={(e)=>setSelectedTime(e.target.value)}>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                    <Button className="add-event-button" onClick={()=>setIsPoppedUp(true)}>Event <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon></Button>
+                            {(selectedTime === 'daily') ?
+                            <div className="event-display">
+                                {passSelectedDay && <DailyView className="daily-view-display" day={selectedDay}/>}
+                            </div>
+                            :
+                            <div className='event-display'>
+                                <WeeklyView className="weekly-view-display" day={selectedDay.toString()} end={pers.getItem("weekEnd")}/>
+                            </div>
+                            }
+                </div>
+                {selectedTime === "daily" && <div className="events-calendar-sidebar">
+                        <div className='calendar-sidebar-div'>
+                            <Calendar className="calendar-view" onChange={(value)=>handleCalendarChange(value)}>
+                            </Calendar></div>
+                        
+                </div>}
+                {isPoppedUp && <NewEventPopUp handleClose = {handleClose}></NewEventPopUp>}
+        </div>
         </div>
     )
 }

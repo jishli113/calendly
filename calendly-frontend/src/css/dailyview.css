@@ -31,6 +31,7 @@
 .dailyview-events{
     height: 100%;
     width:100%;
+    overflow-y: auto;
 }
 .dailyview-card-time-row{
     display:inline;

@@ -11,6 +11,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { Temporal } = require('@js-temporal/polyfill')
 
 
 
@@ -381,17 +382,27 @@ app.get(`/api/geteventnames/:username`, async(req,res)=>{
 app.get(`/api/dailyevents/:username/:date`, async(req,res)=>{
     try {
         const {username, date} = req.params
+        let month = parseInt((date.substring(5,7) == '0') ? date.substring(5,6) : date.substring(5,7))
+        let day = parseInt((date.substring(8,10) == '0') ? date.substring(8,9) : date.substring(8,10))
+        let year = parseInt(date.substring(0,4))
+        let temp = new Temporal.PlainDateTime(year, month, day)
+        console.log(year, month, day)
+        temp = temp.add({days: 1})
+        let date2 = temp.toString().substring(0,10)
+        console.log(date2)
         const response = await pool.query(
-            "SELECT * FROM events WHERE username = $1 AND $2 = ANY(json_array_to_text_array(events.dates))",[username, date]
+            "SELECT * FROM events WHERE username = $1 AND ($2 = ANY(json_array_to_text_array(events.dates)) OR $3 = ANY(json_array_to_text_array(events.dates)))",[username, date, date2]
         )
-        for (const event of response.rows){
+        const tz = Temporal.Now.timeZone()
+        for (e in response.rows){
+            console.log(response.rows[e])
             const getObjectParams = {
                 Bucket: bucketName,
-                Key: event.imagekey
+                Key: response.rows[e].imagekey
             }
             const command = new GetObjectCommand(getObjectParams);
             const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-            event.eventurl = url
+            response.rows[e].eventurl = url
         }
         console.log(response.rows)
         res.json(response.rows)

@@ -6,10 +6,11 @@
   }
   .events-body{
     height: 100vh;
-    width: 70%;
+    flex-grow: 1;
     display: inline-block;
     position:relative;
     background-color: #2E3047;
+    width: 60%;
   }
   .event-display{
     width: 95%;
@@ -34,7 +35,8 @@
     width:40%;
   }
   .events-calendar-sidebar{
-    width:15%;
+    width:25%;
+    float:right;
     display:inline-block;
     position:relative;
     height:100vh;
@@ -56,4 +58,8 @@
     margin-left:auto;
     margin-right:auto;
     top:10%;
+  }
+  .events-body-wrapper{
+    width: 85%;
+    display:flex;
   }

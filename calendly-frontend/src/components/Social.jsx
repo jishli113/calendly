@@ -8,7 +8,7 @@ import { faUserPlus, faUserCheck } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import useAPICall from '../hooks/useAPICall';
-
+import { Button } from 'react-bootstrap';
 
 const Social =() => {
     const {contextUsername} = useContext(UserContext)
@@ -164,8 +164,8 @@ const Social =() => {
                         {pers.getItem("username") !== pers.getItem("contextUsername") &&
                         <div className="follow-icon-div">
                             {!isFollowingLoading ? (!isFollowing ? 
-                                           <FontAwesomeIcon className="follow-button"icon={faUserPlus} onClick={()=>handleFollow(true)}/>
-                                           :<FontAwesomeIcon className="follow-button"icon={faUserCheck} onClick={()=>handleFollow(false)}/>):<></>}
+                                           <Button> Follow  <FontAwesomeIcon className="follow-button"icon={faUserPlus} onClick={()=>handleFollow(true)}/></Button>
+                                           :<Button> Following  <FontAwesomeIcon className="follow-button"icon={faUserCheck} onClick={()=>handleFollow(false)}/></Button>):<></>}
                         </div>
                         }
                     </div>

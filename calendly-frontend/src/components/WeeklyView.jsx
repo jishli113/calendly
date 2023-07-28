@@ -4,6 +4,7 @@ import useAPICall from '../hooks/useAPICall';
 import { Temporal } from '@js-temporal/polyfill';
 import '../css/weeklyview.css'
 import { Row, Col, Card, Navbar, Container } from 'react-bootstrap';
+import useTimeConversion from '../hooks/useTimeConversion';
 const WeeklyView =(props)=>{
     const pers = window.localStorage
     const [weekEvents, setWeekEvents] = useState()
@@ -11,6 +12,8 @@ const WeeklyView =(props)=>{
     const {contextUsername} = useContext(UserContext)
     const [isLoading, setIsLoading] = useState(true)
     const [weekDates, setWeekDates] = useState()
+    const {formatTime} = useTimeConversion()
+
 
     useEffect(()=>{
         if(contextUsername !== null){
@@ -62,8 +65,8 @@ const WeeklyView =(props)=>{
                             {day.length > 0 && day.map(item=>{
                             return <Card className="weeklyview-card">
                                 <h1 className="card-eventname">{item.eventname}</h1>
-                                <p>{`${item.starthour}:${item.startminute}`}</p>
-                                <p>{`${item.endhour}:${item.endminute}`}</p>
+                                <p>{`${formatTime(item.starthour, item.startminute)}`}</p>
+                                <p>{`${formatTime(item.endhour, item.endminute)}`}</p>
                                     </Card>
             })}
                 </div>

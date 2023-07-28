@@ -16,6 +16,8 @@ import { Dropdown } from 'react-bootstrap';
 import { Temporal } from '@js-temporal/polyfill';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 import useAPIMultiPart from '../hooks/useAPIMultiPart.js';
+import moment from 'moment-timezone';
+import useTimeConversion from '../hooks/useTimeConversion';
 const NewEventPopup=(props)=>{
     const pers = window.localStorage
     const [eventName, setEventName] = useState("")
@@ -26,8 +28,9 @@ const NewEventPopup=(props)=>{
     const [tagPopup, setTagPopUp] = useState(false)
     const [repeats, setRepeats] = useState("Today Only")
     const {res:createEventRes, callAPI: createEventCall} = useAPIMultiPart()
-    const {res:eventNames, callAPI: getEvents} = useAPICall()
-    const {res:tags, callAPI:getTags} = useAPICall()
+    const {callAPI: getEvents} = useAPICall()
+    const [eventNames, setEventNames] = useState()
+    const {callAPI:getTags} = useAPICall()
     const {contextUsername} = useContext(UserContext)
     const [username, setUsername] = useState((pers.getItem("contextUsername") === "undefined") ? contextUsername : pers.getItem("contextUsername"))
     const [tagList, setTagList] = useState([])
@@ -39,7 +42,12 @@ const NewEventPopup=(props)=>{
     const [selectedImage, setSelectedImage] = useState(false)
     const imageInputRef = useRef(null)
     const [image, setImage] = useState()
+    const {convertToUTC} = useTimeConversion()
+    let utcTz = Temporal.TimeZone.from("UTC")
 
+    useEffect(()=>{
+        utcTz = Temporal.TimeZone.from("UTC")
+    })
     
     useEffect(()=>{
         if (contextUsername !== null){
@@ -70,11 +78,6 @@ const NewEventPopup=(props)=>{
         
     },[endTime])
     useEffect(()=>{
-        if(tags !== undefined){
-            setTagList(tags)
-        }
-    },[tags])
-    useEffect(()=>{
         console.log(startDate)
     },[startDate])
     useEffect(()=>{
@@ -84,7 +87,8 @@ const NewEventPopup=(props)=>{
 
     },[selectedImage])
     async function getExistingEvents(){
-        await getEvents(`http://localhost:4000/api/geteventnames/${username}`)
+        let events = await getEvents(`http://localhost:4000/api/geteventnames/${username}`)
+        setEventNames(events)
     }
     async function checkNext(){
         console.log("checknext")
@@ -103,7 +107,8 @@ const NewEventPopup=(props)=>{
         else{
             const s = Temporal.PlainDate.from(startDate)
             const e = Temporal.PlainDate.from(endDate)
-            if (Temporal.PlainDate.compare(s, e) == 1){
+            console.log(startTime.substring(0,2), endTime.substring(0,2))
+            if (Temporal.PlainDate.compare(s, e) == 1 || ((startTime.substring(0,2) > endTime.substring(0,2)) || ((startTime.substring(0,2) == endTime.substring(0,2)) && startTime.substring(3,5) > endTime.substring(3,5)))){
                 setInvalidDate(true)
                 setNextPage(false)
             }
@@ -114,7 +119,8 @@ const NewEventPopup=(props)=>{
         }
 }
     async function refreshTags(){
-        await getTags(`http://localhost:4000/api/getalltags/${username}`)
+        let tags = await getTags(`http://localhost:4000/api/getalltags/${username}`)
+        setTagList(tags)
     }
     function handlePers(variable, setVar, key){
          if (variable === undefined){
@@ -152,37 +158,44 @@ const NewEventPopup=(props)=>{
     }
 
     async function createEvents(sd, ed){
-        console.log(startTime)
-        const sh = parseInt(startTime.substring(0,2))
-        const sm = parseInt(startTime.substring(3,5))
-        const eh = parseInt(endTime.substring(0,2))
-        const em = parseInt(endTime.substring(3,5))
-        console.log(sh, " sh")
-        console.log(eh, "eh")
+        console.log(sd.year, ed.year)
+        const startHour = parseInt(startTime.substring(0,2))
+        const startMinute = parseInt(startTime.substring(3,5))
+        const endHour = parseInt(endTime.substring(0,2))
+        const endMinute = parseInt(endTime.substring(3,5))
+        let start = convertToUTC(Temporal.Now.timeZone(), sd.year, sd.month, sd.day, startHour, startMinute)
+        let end = convertToUTC(Temporal.Now.timeZone(), ed.year, ed.month, ed.day, endHour, endMinute)
+        const sh = start.toString().substring(11,13)
+        const sm = start.toString().substring(14,16)
+        const eh = end.toString().substring(11,13)
+        const em = end.toString().substring(14,16)
+        console.log(sh, sm)
+        console.log(eh, em)
         const dates = []
         if (repeats === "Today Only"){
-            dates.push(sd.toString())
+            dates.push(start.toString().substring(0,10))
         }
         else if (repeats === "Daily"){
-            let s = sd
-            while (Temporal.PlainDate.compare(s,ed) == -1){
-                dates.push(s.toString())
+            let s = start
+            while (Temporal.PlainDate.compare(s,end) == -1){
+                console.log(start.toString())
+                dates.push(start.toString().substring(0,10))
                 s = s.add({days:1})
             }
         }
         else if (repeats === "Weekly"){
-            let s = sd 
-            while(Temporal.PlainDate.compare(s,ed) == -1){
-                console.log(s.toString())
-                dates.push(s.toString())
+            let s = start 
+            while(Temporal.PlainDate.compare(s,end) == -1){
+                console.log(s.toString().substring(0,10))
+                dates.push(s.toString().substring(0,10))
                 s = s.add({days:7})
             }
         }
         else if (repeats === "Weekdays"){
-            let s = sd
-            while(Temporal.PlainDate.compare(s,ed) == -1){
+            let s = start
+            while(Temporal.PlainDate.compare(s,end) == -1){
                 if (s["dayOfWeek"] < 6){
-                    dates.push(s.toString())
+                    dates.push(s.toString().substring(0,10))
                 }
                 s = s.add({days:1})
             }
