@@ -1,24 +1,16 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { Form } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
-import '../css/tag.css'
+
 const Tag=(props)=>{
-    const [selected, setSelected] = useState(false)
-    const {tag, tagcolor} = props.tag
     useEffect(()=>{
-        if(selected){
-            props.selectTag({tag, tagcolor})
-        }
-        else{
-            props.deselectTag({tag, tagcolor})
-        }
-    },[selected])
+        console.log(props, "?????")
+    },[])
     return(
-        <span className="tag-container" style={{color:tagcolor, height:100}} onClick={()=>setSelected(!selected)}>
-            <FontAwesomeIcon icon={(selected) ? faCircleXmark : faCircle} style={{color:tagcolor, margin:1}}></FontAwesomeIcon>
-            <Form.Text style={{width:40, color:"white"}}>{tag}</Form.Text>
+        <span className="tag-container" style={{color:props.tag.tagcolor, height:100}}>
+            <FontAwesomeIcon icon={faCircle} style={{color:props.tag.tagcolor, margin:1}}></FontAwesomeIcon>
+            <Form.Text style={{width:40, color:"black"}}>{props.tag.tag}</Form.Text>
         </span>
     )
 }

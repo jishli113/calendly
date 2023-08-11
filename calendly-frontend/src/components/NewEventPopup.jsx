@@ -66,7 +66,7 @@ const NewEventPopup=(props)=>{
         handlePers(startDate, setStartDate, "startDate")
     },[startDate])
 
-
+ 
     useEffect(()=>{
         handlePers(endDate, setEndDate, "endDate")
     },[endDate])
@@ -178,8 +178,8 @@ const NewEventPopup=(props)=>{
         else if (repeats === "Daily"){
             let s = start
             while (Temporal.PlainDate.compare(s,end) == -1){
-                console.log(start.toString())
-                dates.push(start.toString().substring(0,10))
+                console.log(s.toString())
+                dates.push(s.toString().substring(0,10))
                 s = s.add({days:1})
             }
         }
@@ -200,6 +200,7 @@ const NewEventPopup=(props)=>{
                 s = s.add({days:1})
             }
         }
+        console.log(dates, "dates")
         const formData = new FormData()
         console.log(dates)
         formData.append("dates",JSON.stringify(dates))
@@ -211,6 +212,7 @@ const NewEventPopup=(props)=>{
         formData.append("username", username)
         formData.append("selectedTags", JSON.stringify(selectedTags))
         formData.append("eventImage", selectedImage && image)
+        formData.append("active", false)
         await createEventCall(`http://localhost:4000/api/createevent`, "POST", formData)
         if(recurringEventName){
             removePers("startTime")

@@ -335,7 +335,7 @@ app.post(`/api/createevent`, upload.single('eventImage'), async(req,res)=>{
         console.log("adsgasgas")
         console.log(req.body, "body")
         console.log(req.file, "file")
-        const {dates, sh:startHour, sm:startMinute,eh:endHour, em:endMinute, eventName, username, selectedTags} = req.body
+        const {dates, sh:startHour, sm:startMinute,eh:endHour, em:endMinute, eventName, username, selectedTags, active} = req.body
         req.file.buffer
         console.log(req.body)
         let imageKey = randomName()
@@ -350,7 +350,7 @@ app.post(`/api/createevent`, upload.single('eventImage'), async(req,res)=>{
         const command = new PutObjectCommand(params)
         await s3.send(command)
         const response = await pool.query(
-            "INSERT INTO events (username, dates, starthour, startminute, endhour, endminute, eventname, selectedtags, imageKey) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)",[username, dates, startHour, startMinute, endHour, endMinute, eventName, selectedTags, imageKey]
+            "INSERT INTO events (username, dates, starthour, startminute, endhour, endminute, eventname, selectedtags, imageKey, active) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",[username, dates, startHour, startMinute, endHour, endMinute, eventName, selectedTags, imageKey, active]
         )
         res.json(response.rows)
     } catch (error) {
@@ -395,7 +395,6 @@ app.get(`/api/dailyevents/:username/:date`, async(req,res)=>{
         )
         const tz = Temporal.Now.timeZone()
         for (e in response.rows){
-            console.log(response.rows[e])
             const getObjectParams = {
                 Bucket: bucketName,
                 Key: response.rows[e].imagekey
@@ -410,7 +409,28 @@ app.get(`/api/dailyevents/:username/:date`, async(req,res)=>{
         console.error(error.message)
     }
 })
-
+app.post(`/api/feedevents`, async(req,res)=>{
+    try {
+        const {username, date} = req.body
+        console.log(username, date)
+        const response = await pool.query(
+            "SELECT * FROM events INNER JOIN (SELECT followingusername FROM following WHERE forusername = $1) feedusers ON events.username = feedusers.followingusername AND events.active = true AND $2 = ANY(json_array_to_text_array(events.dates));",[username, date]
+        )
+        for (e in response.rows){
+            console.log(response.rows[e])
+            const getObjectParams = {
+                Bucket: bucketName,
+                Key: response.rows[e].imagekey
+            }
+            const command = new GetObjectCommand(getObjectParams);
+            const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+            response.rows[e].eventurl = url
+        }
+        res.json(response.rows)
+    } catch (error) {
+        console.error(error)
+    }
+})
 
 app.listen(4000,()=>{
     console.log("started on 4000")

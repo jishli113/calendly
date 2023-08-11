@@ -20,13 +20,13 @@ const Social =() => {
     const [isLoading, setIsLoading] = useState(true)
     const [isFollowingLoading, setIsFollowingLoading] = useState(true)
     const {username} = useParams()
-    const {res:nonBaseFollowing, callAPI:getNonBaseFollowingRequest} = useAPICall()
-    const {res:nonBaseData, callAPI:getNonBaseUserData} = useAPICall()
-    const {res:baseData, callAPI:getBaseUserData} = useAPICall()
-    const {res:followerCount, callAPI:getFollowerCount} = useAPICall()
-    const {res:followingCount, callAPI:getFollowingCount} = useAPICall()
-    const {res:postRet, callAPI:followRequest} = useAPICall()
-    const {res:deleteRet, callAPI:unfollowRequest} = useAPICall()
+    const {callAPI:getNonBaseFollowingRequest} = useAPICall()
+    const {callAPI:getNonBaseUserData} = useAPICall()
+    const {callAPI:getBaseUserData} = useAPICall()
+    const {callAPI:getFollowerCount} = useAPICall()
+    const {callAPI:getFollowingCount} = useAPICall()
+    const {callAPI:followRequest} = useAPICall()
+    const {callAPI:unfollowRequest} = useAPICall()
 
     
     const pers = window.localStorage
@@ -56,21 +56,6 @@ const Social =() => {
         }
         refreshCount()
     },[])
-    useEffect(()=>{
-        if (followerCount !== undefined){
-            setFollowers(parseInt((followerCount[0])["count"]))
-        }
-    },[followerCount])
-    useEffect(()=>{
-        if (followingCount !== undefined){
-            setFollowing(parseInt((followingCount[0])["count"]))
-        }
-    },[followingCount])
-    useEffect(()=>{
-        if (nonBaseFollowing !== undefined){
-            detIsFollowing(nonBaseFollowing)
-        }
-    },[nonBaseFollowing])
     useEffect(()=>{
         console.log(pers.getItem("contextUsername"), "fr")
         if(pers.getItem("username")!==username){
@@ -102,8 +87,8 @@ const Social =() => {
 
     },[username])
     const notBaseProcedure =async()=>{
-            await getNonBaseFollowingRequest(`http://localhost:4000/api/following/${pers.getItem("contextUsername")}/${username}`, "GET")
-            detIsFollowing(nonBaseFollowing)
+            let nbFollowing = await getNonBaseFollowingRequest(`http://localhost:4000/api/following/${pers.getItem("contextUsername")}/${username}`, "GET")
+            detIsFollowing(nbFollowing)
             await getNonBaseUserData(`http://localhost:4000/api/users/${username}`, "GET")
     }
     const baseProcedure = async()=>{
@@ -145,8 +130,10 @@ const Social =() => {
     async function refreshCount(){
         console.log(pers.getItem("base"))
         setIsLoading(true)
-        await getFollowerCount(`http://localhost:4000/api/followercount/${(pers.getItem("username")===pers.getItem("contextUsername"))?pers.getItem("contextUsername"):pers.getItem("username")}`,"GET")
-        await getFollowingCount(`http://localhost:4000/api/followingcount/${(pers.getItem("username")===pers.getItem("contextUsername"))?pers.getItem("contextUsername"):pers.getItem("username")}`,"GET")
+        let followers = await getFollowerCount(`http://localhost:4000/api/followercount/${(pers.getItem("username")===pers.getItem("contextUsername"))?pers.getItem("contextUsername"):pers.getItem("username")}`,"GET")
+        let following = await getFollowingCount(`http://localhost:4000/api/followingcount/${(pers.getItem("username")===pers.getItem("contextUsername"))?pers.getItem("contextUsername"):pers.getItem("username")}`,"GET")
+        setFollowers(parseInt((followers[0])["count"]))
+        setFollowing(parseInt((following[0])["count"]))
         setIsLoading(false)
     }
         return (

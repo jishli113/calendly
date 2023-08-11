@@ -13,7 +13,7 @@ import { Temporal } from '@js-temporal/polyfill';
 
 const Events =() =>{
     const pers = window.localStorage
-    const [selectedDay, setSelectedDay] = useState(pers.getItem("selectedDay") === null ? new Temporal.Now.plainDate() : Temporal.PlainDate.from(pers.getItem("selectedDay")))
+    const [selectedDay, setSelectedDay] = useState(Temporal.Now.plainDateISO())
     const [passSelectedDay, setPassSelectedDay] = useState(false)
     const [selectedTime, setSelectedTime] = useState((pers.getItem("selected")!=='null') ? pers.getItem("selected"):"daily")
     const [isPoppedUp, setIsPoppedUp] = useState(false)
@@ -24,7 +24,7 @@ const Events =() =>{
     },[selectedTime])
 
     useEffect(()=>{
-        console.log(selectedDay.toString())
+        console.log(selectedDay.toString().substring(0,10))
         pers.setItem("selectedDay", selectedDay)
         setPassSelectedDay(true)
     },[selectedDay])
@@ -37,7 +37,6 @@ const Events =() =>{
     }
     function handleCalendarChange(date){
         let formatDate = `${date.getFullYear()}-${date.getMonth() + 1 < 10 && "0"}${date.getMonth() + 1}-${date.getDate() < 10 ?"0":""}${date.getDate()}`
-        // console.log(Temporal.PlainDate.from(formatDate))
         setSelectedDay(Temporal.PlainDate.from(formatDate))
 
     }
