@@ -5,7 +5,7 @@ import { Form } from 'react-bootstrap';
 
 const Tag=(props)=>{
     useEffect(()=>{
-        console.log(props, "?????")
+        
     },[])
     return(
         <span className="tag-container" style={{color:props.tag.tagcolor, height:100}}>

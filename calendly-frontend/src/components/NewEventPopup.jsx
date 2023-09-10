@@ -27,7 +27,7 @@ const NewEventPopup=(props)=>{
     const [endTime, setEndTime] = useState()
     const [tagPopup, setTagPopUp] = useState(false)
     const [repeats, setRepeats] = useState("Today Only")
-    const {res:createEventRes, callAPI: createEventCall} = useAPIMultiPart()
+    const {callAPI: createEventCall} = useAPIMultiPart()
     const {callAPI: getEvents} = useAPICall()
     const [eventNames, setEventNames] = useState()
     const {callAPI:getTags} = useAPICall()
@@ -78,10 +78,10 @@ const NewEventPopup=(props)=>{
         
     },[endTime])
     useEffect(()=>{
-        console.log(startDate)
+        
     },[startDate])
     useEffect(()=>{
-            console.log(eventNames, "event")
+            
     },[eventNames])
     useEffect(()=>{
 
@@ -91,7 +91,7 @@ const NewEventPopup=(props)=>{
         setEventNames(events)
     }
     async function checkNext(){
-        console.log("checknext")
+        
         setRecurringEventName(true)
         for (let i = 0; i < eventNames.length; i++){
             if (eventNames[i].eventname == eventName){
@@ -99,7 +99,7 @@ const NewEventPopup=(props)=>{
                 break
             }
         }
-        console.log(startTime, endTime)
+        
         if (eventName === "" || startDate === undefined || endDate === undefined || startTime === undefined || endTime === undefined){
             setRequiredFields(true)
             setNextPage(false)
@@ -107,7 +107,7 @@ const NewEventPopup=(props)=>{
         else{
             const s = Temporal.PlainDate.from(startDate)
             const e = Temporal.PlainDate.from(endDate)
-            console.log(startTime.substring(0,2), endTime.substring(0,2))
+            
             if (Temporal.PlainDate.compare(s, e) == 1 || ((startTime.substring(0,2) > endTime.substring(0,2)) || ((startTime.substring(0,2) == endTime.substring(0,2)) && startTime.substring(3,5) > endTime.substring(3,5)))){
                 setInvalidDate(true)
                 setNextPage(false)
@@ -143,10 +143,10 @@ const NewEventPopup=(props)=>{
         setSelectedTags(temp)
     }
     function handleDeselectTag(data){
-        console.log(data)
+        
         let temp = selectedTags
         for(let i = 0; i < selectedTags.length; i ++){
-            console.log(selectedTags[i])
+            
             if (selectedTags[i].tag === data.tag){
                 temp.splice(i, 1)
                 setSelectedTags(temp)
@@ -158,7 +158,7 @@ const NewEventPopup=(props)=>{
     }
 
     async function createEvents(sd, ed){
-        console.log(sd.year, ed.year)
+        
         const startHour = parseInt(startTime.substring(0,2))
         const startMinute = parseInt(startTime.substring(3,5))
         const endHour = parseInt(endTime.substring(0,2))
@@ -169,8 +169,8 @@ const NewEventPopup=(props)=>{
         const sm = start.toString().substring(14,16)
         const eh = end.toString().substring(11,13)
         const em = end.toString().substring(14,16)
-        console.log(sh, sm)
-        console.log(eh, em)
+        
+        
         const dates = []
         if (repeats === "Today Only"){
             dates.push(start.toString().substring(0,10))
@@ -178,7 +178,7 @@ const NewEventPopup=(props)=>{
         else if (repeats === "Daily"){
             let s = start
             while (Temporal.PlainDate.compare(s,end) == -1){
-                console.log(s.toString())
+                
                 dates.push(s.toString().substring(0,10))
                 s = s.add({days:1})
             }
@@ -186,7 +186,7 @@ const NewEventPopup=(props)=>{
         else if (repeats === "Weekly"){
             let s = start 
             while(Temporal.PlainDate.compare(s,end) == -1){
-                console.log(s.toString().substring(0,10))
+                
                 dates.push(s.toString().substring(0,10))
                 s = s.add({days:7})
             }
@@ -200,9 +200,9 @@ const NewEventPopup=(props)=>{
                 s = s.add({days:1})
             }
         }
-        console.log(dates, "dates")
+        
         const formData = new FormData()
-        console.log(dates)
+        
         formData.append("dates",JSON.stringify(dates))
         formData.append("sh", sh)
         formData.append("sm", sm)
@@ -213,17 +213,20 @@ const NewEventPopup=(props)=>{
         formData.append("selectedTags", JSON.stringify(selectedTags))
         formData.append("eventImage", selectedImage && image)
         formData.append("active", false)
-        await createEventCall(`http://localhost:4000/api/createevent`, "POST", formData)
-        if(recurringEventName){
+        
+        let result = await createEventCall(`http://localhost:4000/api/createevent`, "POST", formData)
+        
+        if(result.status === "success"){
             removePers("startTime")
             removePers("endTime")
             removePers("startDate")
             removePers("endDate")
             props.handleClose()
         }
+        //ELSE: tell user that create event failed
     }
     const handleInputClick = ()=>{
-        console.log(imageInputRef, "img")
+        
         if (imageInputRef === undefined){
             return
         }

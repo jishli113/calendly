@@ -15,45 +15,43 @@ const NewTagPopup=(props)=>{
     const [toggleSelectColor, setToggleSelectColor] = useState(false)
     const [tagName, setTagName] = useState()
     const [tagError, setTagError] = useState(false)
-    const {res: createRes, callAPI:callCreateTag} = useAPICallBody()
+    const {callAPI:callCreateTag} = useAPICallBody()
     const {res: tagCheck, callAPI:callTagCheck} = useAPICall()
     const {contextUsername} = useContext(UserContext)
     const [username, setUsername] = useState((contextUsername !== null)?contextUsername:pers.getItem("contextUsername"))
 
     useEffect(()=>{
-        console.log(contextUsername)
+        
         if(contextUsername !== null){
             pers.setItem("contextUsername", contextUsername)
         }
     },[username])
     useEffect(()=>{
-        console.log(tagName)
+        
     },[tagName])
     useEffect(()=>{
-        console.log(tagError)
+        
     },[tagError])
     function onSelectColor(color){
-        console.log(color.hex)
+        
         setSelectedTagColor(color.hex)
         setToggleSelectColor(false)
     }
     async function onCreateTag(){
         const body = {tagName, tagcolor, username}
-        if (tagName !== undefined){
-            await callCreateTag(`http://localhost:4000/api/createtag`, "POST",body)
+        if (tagName === undefined){
+            //show error message
+            return
         }
-    }
-    useEffect(()=>{
-        if(createRes !== undefined){
-            if((createRes[0])["checktag"] == 1){
+        let result = await callCreateTag(`http://localhost:4000/api/createtag`, "POST",body)
+        if((result[0])["checktag"] == 1){
                 setTagError(true)
             }
             else{
                 props.handleClose()
             }
-        }
+    }
 
-    },[createRes])
     return(
         <div className="newtag-wrap">
             <div className="newtag-main">

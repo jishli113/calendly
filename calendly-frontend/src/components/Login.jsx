@@ -4,14 +4,16 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import {Link, useNavigate} from "react-router-dom"
 import { UserContext } from './UserContext';
-import '../css/landing.css'
+import '../css/login.css'
+import useAPICallBody from '../hooks/useAPICallBody';
 
-const Landing = () =>{
-    const {contextUsername,UCsetUsername, contextFirstname, UCsetFirstname, contextLastname, UCsetLastname, UCsetLoggedin, contextFollowers, contextFollowing, UCsetFollowers, UCsetFollowing} = useContext(UserContext)
-        const [username, setUsername] = useState()
+const Login = () =>{
+    const {contextUsername,UCsetUsername} = useContext(UserContext)
+        const [email, setEmail] = useState()
         const [password, setPassword] = useState()
         const [loggedin, setLoggedIn] = useState(false)
         const [incorrectLogin, setIncorrectLogin] = useState(false)
+        const {callAPI:loginAPICall} = useAPICallBody()
         const navigate = useNavigate()
         const pers = window.localStorage
 
@@ -29,39 +31,32 @@ const Landing = () =>{
          };
 
          const onExit = (convertedData) =>{
-            console.log("here")
+            
             UCsetUsername(convertedData[0].key.username)
-            UCsetFirstname(convertedData[0].key.firstname)
-            UCsetLastname(convertedData[0].key.lastname)
+            
             pers.setItem("contextUsername", convertedData[0].key.username)
-            UCsetLoggedin(convertedData[0].key.loggedin)
+            
             navigate('/',{replace:true});
          }
         
         const updateLoggedIn = async(data) =>{
-            if (data.length === 0){
+            if (data.status === "Failed"){
                 setIncorrectLogin(true)
             }
             else{
                 const convertedData = separateObject(JSON.parse(JSON.stringify(data)))
-            if(convertedData[0].key.password === password){
+
                 onExit(convertedData)
-            }
-            else
-            {
-                setIncorrectLogin(true)
-            }
             }
         }
 
         const onLogin = async(e) =>{
             e.preventDefault()
+            
             try {
-                const response = await fetch(`http://localhost:4000/api/users/${username}`,{
-                    method:"GET",
-                    headers:{"Content-Type":"application/json"},
-                }).then((response) => response.json())
-                .then((json)=>updateLoggedIn(json))
+                const body = {email, password}
+                const response = await loginAPICall('http://localhost:4000/api/login', "POST", body)
+                updateLoggedIn(response)
             } catch (error) {
                 console.error(error.message)
             }
@@ -72,8 +67,8 @@ const Landing = () =>{
             <div className="landing-div">
                 <h1 className="landing-header">Calendly</h1>
                 <label className="login-username-input">
-                    <span> Username</span>
-                    <input type="text" onChange={e =>setUsername(e.target.value)}/>
+                    <span> Email</span>
+                    <input type="text" onChange={e =>setEmail(e.target.value)}/>
                 </label>
                 <label className="login-password-input">
                     <span>Password </span>
@@ -85,4 +80,4 @@ const Landing = () =>{
             </div>
         );
     }
-export default Landing;
+export default Login;

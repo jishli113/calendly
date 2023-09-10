@@ -4,13 +4,20 @@
     width:15%;
     display: inline-block;
   }
-  .events-body{
+  .events-body-daily{
     height: 100vh;
     flex-grow: 1;
     display: inline-block;
     position:relative;
-    background-color: #2E3047;
-    width: 60%;
+    width: 100%;
+    padding: 0;
+  }
+  .events-body-weekly{
+    height: 100vh;
+    flex-grow: 1;
+    display: inline-block;
+    position:relative;
+    width: 100%;
   }
   .event-display{
     width: 95%;
@@ -32,11 +39,9 @@
     display:block
   }
   .daily-view-display{
-    width:40%;
+    width:50%;
   }
   .events-calendar-sidebar{
-    width:25%;
-    float:right;
     display:inline-block;
     position:relative;
     height:100vh;
@@ -50,16 +55,7 @@
     top:10%;
     right:5%
   }
-  .calendar-sidebar-div{
-    width:90%;
-    position:absolute;
-    left:0;
-    right:0;
-    margin-left:auto;
-    margin-right:auto;
-    top:10%;
+  .nopadding{
+    padding: 0;
   }
-  .events-body-wrapper{
-    width: 85%;
-    display:flex;
-  }
+  

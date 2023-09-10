@@ -1,4 +1,4 @@
-.followers-text{
+/* .followers-text{
     width: 30%;
     display: inline-block;
     left: 0;
@@ -18,16 +18,6 @@
     cursor: pointer;
     color:white;
 }
-.pfpimg-social{
-    border-radius: 100%;
-    width: 200px;
-    height: 200px;
-    display: inline-block;
-    position: absolute;
-    border: 3px solid purple;
-    left: 20px;
-    top: 5px;
-}
 .username-social{
     width: 100%;
     position: absolute;
@@ -41,12 +31,7 @@
     height: 33%;
     position: relative;
 }
-.sidebar{
-    height: 100vh;
-    width:20%;
-    background-color:#707793;
-    display: inline-block;
-  }
+
 .body{
     width: 100%;
     height: 100vh;
@@ -55,6 +40,7 @@
     height:100%;
     width:85%;
     float:left;
+    display: inline-block;
     background-color: #2E3047;
 }
 .pfp-username-div{
@@ -78,4 +64,20 @@
     position:relative;
     right: 3px;
     text-shadow: 0 0 3px #000;
+}
+ */
+
+  .social-pfp-image{
+    width: 200px;
+    height: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.social-fol-info{
+    white-space: pre-line;
+    cursor: pointer;
+}
+.social-container{
+   padding: 0;
+   height: 100vh;
 }

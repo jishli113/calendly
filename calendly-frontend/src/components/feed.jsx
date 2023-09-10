@@ -6,7 +6,10 @@ import useAPICallBody from '../hooks/useAPICallBody';
 import { Temporal } from '@js-temporal/polyfill';
 import useTimeConversion from '../hooks/useTimeConversion';
 import { Container, Row, Card, Col, Image } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faComment,  faHeart} from '@fortawesome/free-solid-svg-icons';
 import Tag from './Tag';
+import  "../css/feed.css";
 const Feed = ()=> {
     const pers = window.localStorage
     let username = (pers.getItem("contextUsername") == null) ? contextUsername : pers.getItem("contextUsername")
@@ -21,23 +24,17 @@ const Feed = ()=> {
         retrieveFeed()
     },[])
     useEffect(()=>{
-        console.log(feedEvents)
+        
     },[feedEvents])
-    useEffect(()=>{
-        if (contextUsername !== undefined){
-            pers.setItem("contextUsername", contextUsername)
-            username = contextUsername
-        }
-    },[contextUsername])
     async function retrieveFeed(){
         let c = Temporal.Now.plainDateTimeISO()
         let date = convertToUTC(Temporal.Now.timeZone(), c.year, c.month, c.day, c.hour, c.minute)
-        console.log(date.toString().substring(0,10))
-        console.log("wd", username)
+        
+        
         const body = {"username":username, "date": date.toString().substring(0,10)}
-        console.log(body)
+        
         let temp = await callAPI(`http://localhost:4000/api/feedevents`, "POST", body)
-        console.log("done", temp)
+        
         setFeedEvents(temp)
         setFeedLoading(false)
     }
@@ -45,8 +42,8 @@ const Feed = ()=> {
         <Fragment>
             <Sidebar className="sidebar"/>
             <div className='feed-body'>
-            {!feedLoading && feedEvents.map(event =>
-                <FeedEvents event ={event}></FeedEvents>)}
+            {!feedLoading && <>{feedEvents.length > 0 ? feedEvents.map(event =>
+                <FeedEvents event ={event}></FeedEvents>) : <h1>Nothing to see here... Come back for updates!</h1>}</>}
             </div>
         </Fragment>);
 }
@@ -57,17 +54,18 @@ const FeedEvents = (props) =>{
     const [startTime, setStartTime] = useState()
     const [endTime, setEndTime] = useState()
     useEffect(()=>{
+        
         let stime = Temporal.Now.plainDateTimeISO()
         let etime = Temporal.Now.plainDateTimeISO()
         stime = convertToLocal(Temporal.Now.timeZone(), stime.year, stime.month, stime.day, props.event.starthour, props.event.startminute)
         etime = convertToLocal(Temporal.Now.timeZone(), etime.year, etime.month, etime.day, props.event.endhour, props.event.endminute)
         setStartTime(formatTime(stime.hour, stime.minute))
         setEndTime(formatTime(etime.hour, etime.minute))
-        console.log(props.event)
+        
     },[])
-    useEffect(()=>{
-        console.log("startTime", startTime)
-    },[startTime])
+    function handleLike(){
+
+    }
     return(<Container>
                 <Row className='daily-view-card-parent-row'>
                     <Col lg={{span:8, offset:2}} className="daily-event-col">
@@ -76,9 +74,21 @@ const FeedEvents = (props) =>{
                             <h1 className="dailyview-card-event-text">{props.event.eventname}</h1>
                             <p className="dailyview-card-time-text">{`${startTime} - ${endTime}`}</p>
                         </Card.Header>
-                        <Card.Body>
+                        <Card.Body className='eventcard-card-body'>
+                            <Col lg={{span:5, offset:2}}>
                             <Image roundedCircle src={props.event.eventurl} className="event-image" size={20}>
                             </Image>
+                            </Col>
+                            <Col lg={{span:2, offset:10}}>
+                                <Row className='like-icon-row'>
+                                    <FontAwesomeIcon icon={faHeart} className='like-icon' onClick={handleLike()}></FontAwesomeIcon>
+                                </Row>
+                                <h3>{props.event.likes.length}</h3>
+                                <Row className='comment-icon-row'>
+                                    <FontAwesomeIcon icon={faComment} className='comment-icon'></FontAwesomeIcon>
+                                </Row>
+                                <h3>{props.event.usercomments.length}</h3>
+                            </Col>
                         </Card.Body>
                         <Card.Footer>
                             <Row>
@@ -89,7 +99,6 @@ const FeedEvents = (props) =>{
                                     {props.event.selectedtags.length > 0 && props.event.selectedtags.map(tag=>(
                                         <Tag tag={tag}> </Tag>
                                     ))}
-                                    {/* {props.props.selectedtags.length > 0 && <h1>adfasd</h1>} */}
                                 </div>
                             </Row>
                         </Card.Footer>

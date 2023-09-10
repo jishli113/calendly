@@ -10,12 +10,13 @@ import {
 } from "react-router-dom";
 import Feed from './components/feed';
 import Social from './components/Social'
-import Landing from './components/Landing'
+import Login from './components/Login';
 import Settings from './components/settings';
 import Events from './components/Events';
 import Register from './components/register'
 import LoginCheck from './components/LoginCheck'
 import { ThemeProvider } from 'react-bootstrap';
+import RegisteredCheck from './components/RegisteredCheck';
 
 function App() {
 
@@ -41,7 +42,7 @@ function App() {
         <Route path='/social/:username' element={<LoginCheck element = {<Social/>}/>}/>
         <Route path='/settings' element={<LoginCheck element = {<Settings/>}/>}/>
         <Route path='/events' element={<LoginCheck element = {<Events/>}/>}/>
-        <Route path='/landing' element ={<Landing/>}/>
+        <Route path='/login' element ={<RegisteredCheck element={<Login/>}></RegisteredCheck>}/>
         <Route path='/register' element={<Register/>}/>
       </Routes>
   </div>

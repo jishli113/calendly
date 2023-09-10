@@ -8,7 +8,9 @@ import { faUserPlus, faUserCheck } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import useAPICall from '../hooks/useAPICall';
-import { Button } from 'react-bootstrap';
+import { Button, Image } from 'react-bootstrap';
+import useAPICallBody from '../hooks/useAPICallBody';
+import {Container, Row, Col} from 'react-bootstrap'
 
 const Social =() => {
     const {contextUsername} = useContext(UserContext)
@@ -20,31 +22,23 @@ const Social =() => {
     const [isLoading, setIsLoading] = useState(true)
     const [isFollowingLoading, setIsFollowingLoading] = useState(true)
     const {username} = useParams()
-    const {callAPI:getNonBaseFollowingRequest} = useAPICall()
-    const {callAPI:getNonBaseUserData} = useAPICall()
-    const {callAPI:getBaseUserData} = useAPICall()
-    const {callAPI:getFollowerCount} = useAPICall()
-    const {callAPI:getFollowingCount} = useAPICall()
-    const {callAPI:followRequest} = useAPICall()
-    const {callAPI:unfollowRequest} = useAPICall()
+    const {callAPI:getNonBaseFollowingRequest} = useAPICallBody()
+    const {callAPI:getNonBaseUserData} = useAPICallBody()
+    const {callAPI:getBaseUserData} = useAPICallBody()
+    const {callAPI:getFollowerCount} = useAPICallBody()
+    const {callAPI:getFollowingCount} = useAPICallBody()
+    const {callAPI:followRequest} = useAPICallBody()
+    const {callAPI:unfollowRequest} = useAPICallBody()
+    const [displayInfo, setDisplayInfo] = useState()
 
     
     const pers = window.localStorage
 
     useEffect (() =>{
-        console.log("changed")
-        console.log(isFollowing)
+        
+        
         if(pers.getItem("username")!==username){
             pers.setItem("username",username)
-        }
-        if (contextUsername !== null){
-            pers.setItem("contextUsername", contextUsername)
-            if (username === contextUsername){
-                baseProcedure()
-            }
-            else{
-                notBaseProcedure()
-            }
         }
         else{
             if(pers.getItem("username") !== pers.getItem("contextUsername")){
@@ -57,23 +51,18 @@ const Social =() => {
         refreshCount()
     },[])
     useEffect(()=>{
-        console.log(pers.getItem("contextUsername"), "fr")
+        
+    },[username])
+    useEffect(()=>{
+        
+        
+        setOpen(false)
         if(pers.getItem("username")!==username){
             pers.setItem("username",username)
         }
-        setOpen(false)
-        if (contextUsername !== null){
-            pers.setItem("contextUsername", contextUsername)
-            if (username === contextUsername){
-                pers.setItem("base",true)
-                baseProcedure()
-            }
-            else{
-                pers.setItem("base",false)
-                notBaseProcedure()
-            }
-        }
-        else{
+        
+        setIsLoading(true)
+        setIsFollowingLoading(true)
             if(pers.getItem("username") === pers.getItem("contextUsername")){
                 pers.setItem("base", true)
                 baseProcedure()
@@ -82,20 +71,28 @@ const Social =() => {
                 pers.setItem("base", false)
                 notBaseProcedure()
             }
-        }
         refreshCount()
 
     },[username])
+    useEffect(()=>{
+        
+    },[displayInfo])
     const notBaseProcedure =async()=>{
-            let nbFollowing = await getNonBaseFollowingRequest(`http://localhost:4000/api/following/${pers.getItem("contextUsername")}/${username}`, "GET")
+            let nbFollowing = await getNonBaseFollowingRequest(`http://localhost:4000/api/isfollowing`, "POST", {forusername:username, followingusername:pers.getItem("contextUsername")})
             detIsFollowing(nbFollowing)
-            await getNonBaseUserData(`http://localhost:4000/api/users/${username}`, "GET")
+            
+            let userInfo = await getNonBaseUserData(`http://localhost:4000/api/userinfo`, "POST", {username})
+            
+            setDisplayInfo(userInfo[0])
+            setIsLoading(false)
     }
     const baseProcedure = async()=>{
-        await getBaseUserData(`http://localhost:4000/api/users/${username}`,"GET")
+        let userInfo = await getBaseUserData(`http://localhost:4000/api/userinfo`,"POST", {username})
+        setDisplayInfo(userInfo[0])
+        setIsLoading(false)
     }
     const detIsFollowing = (data) =>{
-        setIsFollowingLoading(true)
+        
         if (Object.keys(data).length == 0){
             setIsFollowing(false)
         }
@@ -110,59 +107,83 @@ const Social =() => {
         setOpen(!open)
         setFollowerSwitch(fol)
     }
+    useEffect(()=>{
+        
+    },[displayInfo])
 
     const handleFollow = async(updateFollow) =>{
-        setIsFollowing(updateFollow)
+        
         if (updateFollow){
-            followRequest(`http://localhost:4000/api/follow/${pers.getItem("contextUsername")}/${pers.getItem("username")}`, "POST")
+            let body = {follower:pers.getItem("contextUsername"), followed:pers.getItem("username")}
+            followRequest(`http://localhost:4000/api/follow/`, "POST", body)
             setFollowers(followers + 1)
         }
         else
         {
-            unfollowRequest(`http://localhost:4000/api/unfollow/${pers.getItem("contextUsername")}/${pers.getItem("username")}`,"DELETE")
+            let body = {unfollower:pers.getItem("contextUsername"), beingunfollowed:pers.getItem("username")}
+            unfollowRequest(`http://localhost:4000/api/unfollow/`,"POST", body)
             setFollowers(followers - 1)
         }
+        setIsFollowing(updateFollow)
     }
     const handleClose = () =>{
         setOpen(!open)
         refreshCount()
     }
     async function refreshCount(){
-        console.log(pers.getItem("base"))
-        setIsLoading(true)
-        let followers = await getFollowerCount(`http://localhost:4000/api/followercount/${(pers.getItem("username")===pers.getItem("contextUsername"))?pers.getItem("contextUsername"):pers.getItem("username")}`,"GET")
-        let following = await getFollowingCount(`http://localhost:4000/api/followingcount/${(pers.getItem("username")===pers.getItem("contextUsername"))?pers.getItem("contextUsername"):pers.getItem("username")}`,"GET")
+        
+        setIsFollowingLoading(true)
+        const user = pers.getItem("username")
+        const body = {username:user}
+        let followers = await getFollowerCount(`http://localhost:4000/api/followercount`,"POST", body)
+        let following = await getFollowingCount(`http://localhost:4000/api/followingcount`,"POST", body)
         setFollowers(parseInt((followers[0])["count"]))
         setFollowing(parseInt((following[0])["count"]))
-        setIsLoading(false)
+        setIsFollowingLoading(false)
     }
         return (
-                <div className='body' >
-                <Sidebar className="sidebar"/>
-                {!isLoading && <div className="social-body">
-                <div className="profile-header">
-                    <div className='pfp-username-div'>
-                        <img className="pfpimg-social"></img>
-                        <h1 className="username-social">{username}</h1>
-                    </div>
-                    <div className="fol-div">
-                        <h1 className="followers-text" onClick={()=>openPopup(true)}>{followers}<br></br>Followers</h1>
-                        <h1 className="following-text" onClick={()=>openPopup(false)}>{following}<br></br>Following</h1>
-                        {pers.getItem("username") !== pers.getItem("contextUsername") &&
-                        <div className="follow-icon-div">
-                            {!isFollowingLoading ? (!isFollowing ? 
+                <>
+                <Sidebar/>
+                <Container fluid className='social-container'>
+                <Row>
+                    <Col lg={4}>
+                        {!isLoading && 
+                            <>
+                            <Row>
+                        <Col lg={{span:8, offset:2}} className='my-4'>
+                            <Image roundedCircle src={displayInfo.pfpimg} className='social-pfp-image'></Image>
+                        </Col>
+                    </Row>
+                    <Row className='my-4'>
+                        <h1 style={{textAlign:"center"}}>
+                        {displayInfo.username}
+                        </h1>
+
+                    </Row>
+                    <Row>
+                        <Col lg={{span:2, offset:2}}>
+                                <span className="social-fol-info" onClick={()=>openPopup(true)}> {`${followers}\n Followers`} </span>
+                            </Col>
+                            <Col lg={{span:2, offset:1}}>
+                                <span className='social-fol-info' onClick={()=>openPopup(false)}>{`${following}\n Following`}</span>
+                            </Col>
+                            <Col>
+                            {pers.getItem("contextUsername") != pers.getItem("username") && !isFollowingLoading ? (!isFollowing ? 
                                            <Button> Follow  <FontAwesomeIcon className="follow-button"icon={faUserPlus} onClick={()=>handleFollow(true)}/></Button>
                                            :<Button> Following  <FontAwesomeIcon className="follow-button"icon={faUserCheck} onClick={()=>handleFollow(false)}/></Button>):<></>}
-                        </div>
+                            </Col>
+                    </Row>
+                            </>
                         }
-                    </div>
-                </div>
-                {open && 
-                <FolPopup className="fol-popup-social" trigger={true} folswitch={followerSwitch} handleClose={handleClose} username={username}>
-                </FolPopup>
-                }
-                </div>}
-                </div>
-        );
+
+                    </Col>
+
+                </Row>
+                </Container>
+                {open && <FolPopup className="fol-popup-social" trigger={true} folswitch={followerSwitch} handleClose={handleClose} username={username}>
+                // </FolPopup>}
+                </>
+
+        )
     } 
 export default Social;
