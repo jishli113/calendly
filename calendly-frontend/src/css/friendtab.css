@@ -15,6 +15,7 @@
     position: absolute;
     left: 70px;
     font-size: 27px;
+    color:black
 }
 .friendtab-pfp{
     position: absolute;
@@ -24,7 +25,7 @@
     border-radius: 100%;
     vertical-align: middle;
     overflow: hidden;
-    border: 3px solid purple;
+    border: 2px solid black;
 }
 .friendtab-fol-button{
     position: absolute;
@@ -42,7 +43,4 @@
     position:absolute;
     right:10px;
     bottom:6px
-}
-.friendtab-username{
-    color:white
 }

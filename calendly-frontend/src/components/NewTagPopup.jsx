@@ -21,19 +21,19 @@ const NewTagPopup=(props)=>{
     const [username, setUsername] = useState((contextUsername !== null)?contextUsername:pers.getItem("contextUsername"))
 
     useEffect(()=>{
-        
+        (contextUsername)
         if(contextUsername !== null){
             pers.setItem("contextUsername", contextUsername)
         }
     },[username])
     useEffect(()=>{
-        
+        (tagName)
     },[tagName])
     useEffect(()=>{
-        
+        (tagError)
     },[tagError])
     function onSelectColor(color){
-        
+        (color.hex)
         setSelectedTagColor(color.hex)
         setToggleSelectColor(false)
     }

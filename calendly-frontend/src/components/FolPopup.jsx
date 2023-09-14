@@ -14,7 +14,7 @@ function FolPopup(props){
     useEffect(()=>{
         setIsLoading(true)
         getFolData(props.folswitch)
-        
+        (props.folswitch, "folsw")
     },[])
     const setFolPPlList = (data) =>{
         let pplListConvertedData =  separateObject(JSON.parse(JSON.stringify(data)))
@@ -23,9 +23,9 @@ function FolPopup(props){
     }
     const getFolData = async(fol) =>{
         const tag = fol ? "followers" : "following"
-        
+        (props.username, "????")
         let folData = await getUserFolData(`http://localhost:4000/api/${tag}`, "POST", {username:props.username})
-        
+        (folData, "adgads")
         setFolPPlList(folData)
         setIsLoading(false)
     }
@@ -41,7 +41,7 @@ function FolPopup(props){
      };
 
     useEffect(()=>{
-        
+        (ppllist, "changed")
     },[ppllist])
 
     return(props.trigger) ? (

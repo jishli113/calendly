@@ -18,7 +18,7 @@ const SelectTag=(props)=>{
     return(
         <span className="tag-container" style={{color:tagcolor, height:100}} onClick={()=>setSelected(!selected)}>
             <FontAwesomeIcon icon={(selected) ? faCircleXmark : faCircle} style={{color:tagcolor, margin:1}}></FontAwesomeIcon>
-            <Form.Text style={{width:40, color:"white"}}>{tag}</Form.Text>
+            <Form.Text style={{width:40, color:"black"}}>{tag}</Form.Text>
         </span>
     )
 }

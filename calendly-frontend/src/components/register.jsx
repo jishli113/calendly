@@ -11,12 +11,6 @@ import useLocalToFile from '../hooks/useLocalToFile'
 import useAPIMultiPart from '../hooks/useAPIMultiPart';
 import useAPICall from '../hooks/useAPICall';
 const Register = () => {
-        const[username, setUsername] = useState()
-        const[password, setPassword] = useState()
-        const [password2, setPassword2] = useState()
-        const[firstname, setFirstName] = useState()
-        const[lastname, setLastName] = useState()
-        const [email, setEmail] = useState()
         const [failedRegister, setFailedRegister] = useState(false)
         const [errorMessage, setErrorMessage] = useState()
         const {callAPI: registerCall} = useAPIMultiPart()
@@ -46,7 +40,7 @@ const Register = () => {
                     let registerReq = null
                     formValue.append('pfpimg', selectedImage && image)
                     if (formValue.get("pfpimg") === "false"){
-                        
+                        ("HERE")
                         registerReq = await registerCall(`http://localhost:4000/api/registerdefault`, "POST", formValue)
                     }
                     else{
@@ -69,7 +63,7 @@ const Register = () => {
 
         
         const handleInputClick = ()=>{
-            
+            (imageInputRef, "img")
             if (imageInputRef === undefined){
                 return
             }

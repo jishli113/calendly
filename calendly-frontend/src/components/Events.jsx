@@ -25,12 +25,12 @@ const Events =() =>{
     },[selectedTime])
 
     useEffect(()=>{
-        
+        (selectedDay.toString().substring(0,10))
         pers.setItem("selectedDay", selectedDay)
         setPassSelectedDay(true)
     },[selectedDay])
     useEffect(()=>{
-        
+        ("adsf")
     },[isPoppedUp])
 
     const handleClose=()=>{
@@ -42,34 +42,6 @@ const Events =() =>{
 
     }
     return(
-        // <div className="events-page-body">
-        //     <Sidebar className="sidebar"/>
-        //     <div className="events-body-wrapper">
-        //         <div className={selectedTime === "daily" ? "events-body-daily" : "events-body-weekly"}>
-        //             <select className="form-select" value={selectedTime} onChange={(e)=>setSelectedTime(e.target.value)}>
-        //                 <option value="daily">Daily</option>
-        //                 <option value="weekly">Weekly</option>
-        //             </select>
-        //             <Button className="add-event-button" onClick={()=>setIsPoppedUp(true)}>Event <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon></Button>
-        //                     {(selectedTime === 'daily') ?
-        //                     <div className="event-display">
-        //                         {passSelectedDay && <DailyView className="daily-view-display" day={selectedDay}/>}
-        //                     </div>
-        //                     :
-        //                     <div className='event-display'>
-        //                         <WeeklyView className="weekly-view-display" day={selectedDay.toString()} end={pers.getItem("weekEnd")}/>
-        //                     </div>
-        //                     }
-        //         </div>
-        //         {selectedTime === "daily" && <div className="events-calendar-sidebar">
-        //                 <div className='calendar-sidebar-div'>
-        //                     <Calendar className="calendar-view" onChange={(value)=>handleCalendarChange(value)}>
-        //                     </Calendar></div>
-                        
-        //         </div>}
-        //         {isPoppedUp && <NewEventPopUp handleClose = {handleClose}></NewEventPopUp>}
-        // </div>s
-        // </div>
         <>
             <Sidebar/>
             <Container fluid className='nopadding'>

@@ -34,13 +34,10 @@ function Sidebar(){
     //     </ul>
     // </div>
     <>
-        {/* <Nav fluid className="col-md-12 sidebar">
-
-        </Nav> */}
         <Container fluid className='sidebar'>
             <Nav>
                 <Nav.Item>
-                    <Nav.Link href="/">Calendly</Nav.Link>
+                    <Nav.Link href="/"><h1 className='sidebar-calendly-title'>Calendly</h1></Nav.Link>
                 </Nav.Item>
                 {SidebarData.map(val=>{
                     return(

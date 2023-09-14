@@ -1,7 +1,7 @@
 
 const useAPICallBody=()=>{
     async function callAPI(url, method, body){
-        
+        (url, method, body)
         let res = await fetch(url,
             {method:method,
         headers:{"Content-Type":"application/json"},

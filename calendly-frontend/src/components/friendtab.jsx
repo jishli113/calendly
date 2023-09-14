@@ -25,7 +25,7 @@ const FriendTab =(props) => {
         },[])
         const getFolStatus = async() =>{
             
-            
+            (pers.getItem("contextUsername"),props.username)
             let data = await getFollowingData(`http://localhost:4000/api/isfollowing/`, "POST", {forusername:props.username, followingusername:pers.getItem("contextUsername")})
             setFollowingData(data)
             if (data === undefined){
@@ -40,7 +40,7 @@ const FriendTab =(props) => {
             navigate(`/social/${props.username}`)
         }
         const handleFol = async() =>{
-            
+            ("fol")
             if (isFollowing === false){
                 await callFollow(`http://localhost:4000/api/follow/`, "POST", {followed:props.username, follower:pers.getItem("contextUsername")})
             }
@@ -50,7 +50,7 @@ const FriendTab =(props) => {
         }
         return (
                 <>
-                    {!isLoading && <Card style={{height:'100%', width:'100%', borderRadius:'20px', borderColor:'#3BBA9C', borderWidth:'3px', backgroundColor:'#43455C'}} key={window.location.pathname} onClick={onExit} >
+                    {!isLoading && <Card style={{height:'100%', width:'100%', borderRadius:'20px', borderColor:'#96613d', borderWidth:'3px', backgroundColor:'white'}} key={window.location.pathname} onClick={onExit} >
                     <Card.Body className="friendtab-card-body">
                     <h1 className="friendtab-username">{props.username}</h1>
                     <Image roundedCircle className="friendtab-pfp" src={props.pfpimg}></Image>

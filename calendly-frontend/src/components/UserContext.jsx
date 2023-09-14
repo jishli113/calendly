@@ -13,13 +13,13 @@ export const UserContextProvider = ({children}) =>{
 
     useEffect(()=>{
         if (contextUsername){
-            
+            (contextUsername, "contextNULLCHECK")
             pers.setItem("contextUsername", contextUsername)
         }
     },[contextUsername])
     const UCsetUsername = (value) =>{
         setUsername(value)
-        
+        (value, "heree!")
     }
 
     const UCsetFirstname = (value) =>{

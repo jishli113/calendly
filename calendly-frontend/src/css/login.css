@@ -1,3 +1,6 @@
 .incorrect-login-text{
-    color: 'red';
+    color: red;
+}
+.login-calendly-text{
+    font-size: 40px;
 }

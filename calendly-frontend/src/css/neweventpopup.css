@@ -17,10 +17,10 @@ input[type="file"]{
     width: 100%;
     height: 80vh;
     max-width: 80%;
-    background-color: #2E3047;
     border-radius: 20px;
     border-style:solid;
-    border-color: #37173d;
+    border-color: #96613d;
+    background-color: white;
 }
 .event-name-form{
     

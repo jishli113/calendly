@@ -78,8 +78,8 @@ const corsOptions = {
 }
 
 const authorization = (req,res, next)=>{
-    
-    
+    (req.cookies)
+    (req.body, "AUTH")
     const token = req.cookies.access_token
     if (!token){
         return res.send({status:"failed"})
@@ -87,7 +87,7 @@ const authorization = (req,res, next)=>{
     else{
         try{
             const data = jwt.verify(token, process.env.JWT_TOKEN_SECRET_KEY)
-            
+            (data, "data")
             req.username = data.username
             req.email = data.email
             return next()
@@ -116,7 +116,7 @@ app.get('/cookieinfo', authorization, (req,res)=>{
 })
 
 app.get('/test', (req,res)=>{
-    
+    (req.cookies.access_token)
 
 })
  
@@ -128,17 +128,17 @@ app.get('/api/allusers', async (req,res) =>{
         res.json(allUsers.rows);
     }
     catch(error){
-        
+        (error.message)
     }
 })
 app.post('/api/register',  upload.single('pfpimg'), async (req,res) =>{
         const {username, firstname, lastname, password, email} = req.body
-        
-        
+        (req.body, "BODY")
+        (req.file, "file")
         let uid = undefined
         firebase.auth().createUserWithEmailAndPassword(email, password).then(async (userCredential)=>{
             req.file.buffer
-            
+            (req.body)
             let imageKey = randomName()
             const params = {
                 Bucket:bucketName,
@@ -159,7 +159,7 @@ app.post('/api/register',  upload.single('pfpimg'), async (req,res) =>{
             return res.json({status:"success", data:newUser.rows[0]})
         }).catch(function(error){
             console.error(error.message)
-            
+            (error.code, "ERRORCODEEEE")
             let msg = "Registration Failed"
             if (error.code === "auth/email-already-in-use"){
                 msg = "Email already has an account registered"
@@ -168,7 +168,6 @@ app.post('/api/register',  upload.single('pfpimg'), async (req,res) =>{
         })
 })
 app.post('/api/registerdefault', upload.single(), async (req,res) =>{
-    
     const {username, firstname, lastname, password, email} = req.body
     let uid = undefined
     firebase.auth().createUserWithEmailAndPassword(email, password).then(async (userCredential)=>{
@@ -183,7 +182,7 @@ app.post('/api/registerdefault', upload.single(), async (req,res) =>{
         return res.json({status:"success", data:newUser.rows[0]})
     }).catch(function(error){
         console.error(error.message)
-        
+        (error.code, "ERRORCODEEEE")
         let msg = "Registration Failed"
         if (error.code === "auth/email-already-in-use"){
             msg = "Email already has an account registered"
@@ -201,13 +200,13 @@ app.post('/api/what', async(req,res)=>{
     );
     res.json(200)
 })
-app.post('/api/login', async(req, res)=>{
+app.post('/api/login', upload.single(), async(req, res)=>{
     const {email, password} = req.body
     firebase.auth().signInWithEmailAndPassword(email, password).then(async function(userCredential){
         let userInfo = await pool.query(
             "SELECT * FROM userinfo WHERE email = $1", [email]
         )
-        
+        (userInfo.rows)
         const token = jwt.sign({username:userInfo.rows[0].username, email: userInfo.rows[0].email}, process.env.JWT_TOKEN_SECRET_KEY)
         return res.cookie("access_token", token, {httpOnly:true, maxAge:300000000, secure:false}).status(200).json(userInfo.rows)
     }).catch(function(error){
@@ -218,16 +217,16 @@ app.post('/api/login', async(req, res)=>{
             res.json({status:"Failed"})
         }
         else{
-            
+             (errorMessage)
         }
-        
+        (error)
     })
 
 })
 app.post('/api/logout', authorization, async (req,res)=>{
     try{
         firebase.auth().signOut().then(()=>{
-            
+            ("huh")
             res.clearCookie("access_token", {httpOnly:true, maxAge:300000000, secure:false})
             res.status(200).json({deleted:"success"})
         }).catch((error)=>{
@@ -244,7 +243,7 @@ app.post('/api/userinfo', authorization, async(req,res)=>{
         const user = await pool.query(
             "SELECT * FROM userinfo WHERE username = $1",[username]
         )
-        
+        (user.rows, "ROW")
             const getObjectParams = {
                 Bucket: bucketName,
                 Key: user.rows[0].pfpimg
@@ -255,7 +254,7 @@ app.post('/api/userinfo', authorization, async(req,res)=>{
             res.json(user.rows)
     }
     catch(err){
-        
+        (err.message)
     }
 })
 app.patch('/api/incfollowing/:username',async(req,res)=>{
@@ -298,7 +297,7 @@ app.delete("/api/users/", authorization, async(req,res)=>{
 app.post("/api/followers", async(req,res)=>{
     try{
         const {username} = req.body
-        
+        (username)
         const response = await pool.query(
             "SELECT followingusername, pfpimg FROM userinfo INNER JOIN (SELECT followingusername FROM following WHERE forusername = $1) followings ON followings.followingusername = userinfo.username",[username]
         )
@@ -450,14 +449,14 @@ app.get('/api/getalltags/:username',async(req,res)=>{
 })
 app.post(`/api/createevent`, upload.single('eventImage'), async(req,res)=>{
     try {
-        
-        
-        
+        ("adsgasgas")
+        (req.body, "body")
+        (req.file, "file")
         const {dates, sh:startHour, sm:startMinute,eh:endHour, em:endMinute, eventName, username, selectedTags, active} = req.body
         req.file.buffer
-        
+        (req.body)
         let imageKey = randomName()
-        
+        ("imagekey", imageKey)
         const params = {
             Bucket:bucketName,
             Key:imageKey,
@@ -469,11 +468,11 @@ app.post(`/api/createevent`, upload.single('eventImage'), async(req,res)=>{
         const response = await pool.query(
             "INSERT INTO events (username, dates, starthour, startminute, endhour, endminute, eventname, selectedtags, imageKey, active) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",[username, dates, startHour, startMinute, endHour, endMinute, eventName, selectedTags, imageKey, active]
         )
-        
+        ("sdfaf")
         res.json({status:"success"})
     } catch (error) {
         console.error(error.message)
-        
+        ("adsfas")
         res.json({status:"failed"})
     }
 })
@@ -506,14 +505,14 @@ app.post(`/api/dailyevents/`, async(req,res)=>{
         let day = parseInt((date.substring(8,10) == '0') ? date.substring(8,9) : date.substring(8,10))
         let year = parseInt(date.substring(0,4))
         let temp = new Temporal.PlainDateTime(year, month, day)
-        
+        (year, month, day)
         temp = temp.add({days: 1})
         let date2 = temp.toString().substring(0,10)
-        
+        (date2)
         const response = await pool.query(
             "SELECT * FROM eventstats INNER JOIN (SELECT * FROM events WHERE username = $1 AND ($2 = ANY(json_array_to_text_array(events.dates)) OR $3 = ANY(json_array_to_text_array(events.dates))))e ON eventstats.username = e.username AND eventstats.eventname = e.eventname",[username, date, date2]
         )
-        
+        (response, "response")
         const tz = Temporal.Now.timeZone()
         for (e in response.rows){
             const getObjectParams = {
@@ -533,13 +532,13 @@ app.post(`/api/dailyevents/`, async(req,res)=>{
 app.post(`/api/feedevents`, async(req,res)=>{
     try {
         const {username, date} = req.body
-        
+        (username, date)
         const response = await pool.query(
             "SELECT * FROM events INNER JOIN (SELECT forusername FROM following WHERE followingusername = $1) feedusers ON events.username = feedusers.forusername AND events.active = true AND $2 = ANY(json_array_to_text_array(events.dates)) INNER JOIN (SELECT * FROM eventstats)e ON events.username = e.username AND events.eventname = e.eventname",[username, date]
         )
-        
+        (response.rows, "res")
         for (e in response.rows){
-            
+            (response.rows[e])
             const getObjectParams = {
                 Bucket: bucketName,
                 Key: response.rows[e].imagekey
@@ -548,18 +547,18 @@ app.post(`/api/feedevents`, async(req,res)=>{
             const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
             response.rows[e].eventurl = url
         }
-        
+        (response.rows)
         res.json(response.rows)
     } catch (error) {
         console.error(error)
     }
 })
 app.get('/api/b', (req,res)=>{
-    
+    (randomName())
     res.json({successs:'yes'})
 })
 
 app.listen(4000,()=>{
-    
+    ("started on 4000")
 })
 module.exports = app

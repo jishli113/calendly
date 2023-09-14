@@ -24,17 +24,17 @@ const Feed = ()=> {
         retrieveFeed()
     },[])
     useEffect(()=>{
-        
+        (feedEvents)
     },[feedEvents])
     async function retrieveFeed(){
         let c = Temporal.Now.plainDateTimeISO()
         let date = convertToUTC(Temporal.Now.timeZone(), c.year, c.month, c.day, c.hour, c.minute)
-        
-        
+        (date.toString().substring(0,10))
+        ("wd", username)
         const body = {"username":username, "date": date.toString().substring(0,10)}
-        
+        (body)
         let temp = await callAPI(`http://localhost:4000/api/feedevents`, "POST", body)
-        
+        ("done", temp)
         setFeedEvents(temp)
         setFeedLoading(false)
     }
@@ -53,18 +53,21 @@ const FeedEvents = (props) =>{
     const {formatTime, convertToLocal} = useTimeConversion()
     const [startTime, setStartTime] = useState()
     const [endTime, setEndTime] = useState()
+    const [likeCount, setLikeCount] = useState()
+    const [liked, setLiked] = useState(false)
     useEffect(()=>{
-        
         let stime = Temporal.Now.plainDateTimeISO()
         let etime = Temporal.Now.plainDateTimeISO()
         stime = convertToLocal(Temporal.Now.timeZone(), stime.year, stime.month, stime.day, props.event.starthour, props.event.startminute)
         etime = convertToLocal(Temporal.Now.timeZone(), etime.year, etime.month, etime.day, props.event.endhour, props.event.endminute)
         setStartTime(formatTime(stime.hour, stime.minute))
         setEndTime(formatTime(etime.hour, etime.minute))
-        
+        setLikeCount(props.event.likes.length)
+        (props.event)
     },[])
     function handleLike(){
-
+        setLiked(!liked)
+        setLikeCount(likeCount + 1)
     }
     return(<Container>
                 <Row className='daily-view-card-parent-row'>
@@ -81,9 +84,9 @@ const FeedEvents = (props) =>{
                             </Col>
                             <Col lg={{span:2, offset:10}}>
                                 <Row className='like-icon-row'>
-                                    <FontAwesomeIcon icon={faHeart} className='like-icon' onClick={handleLike()}></FontAwesomeIcon>
+                                    <FontAwesomeIcon icon={faHeart} className={liked ? 'like-icon-liked' : 'like-icon'} onClick={()=>handleLike()}></FontAwesomeIcon>
                                 </Row>
-                                <h3>{props.event.likes.length}</h3>
+                                <h3>{likeCount}</h3>
                                 <Row className='comment-icon-row'>
                                     <FontAwesomeIcon icon={faComment} className='comment-icon'></FontAwesomeIcon>
                                 </Row>

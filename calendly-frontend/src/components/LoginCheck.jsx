@@ -10,12 +10,12 @@ const LoginCheck =({element}) =>{
     const [isAuth, setIsAuth] = useState(undefined)
     const {callAPI:authenticate} = useAPICall()
     useEffect(()=>{
-        
+        ("whfdsf")
         checkStatus()
     },[])
     async function checkStatus(){
         let res = await authenticate(`http://localhost:4000/authenticate`, "POST")
-        
+        (res)
         setIsAuth(res)
     }
     

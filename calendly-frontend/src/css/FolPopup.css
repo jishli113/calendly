@@ -15,17 +15,17 @@
     width: 100%;
     height: 80%;
     max-width: 640px;
-    background-color: #2E3047;
+    background-color: white;
     border-radius: 20px;
     border-style:solid;
-    border-color: #37173d;
+    border-color: #96613d;
 }
 .fol-popup-close{
     position: absolute;
     top: 10px;
     right: 16px;
     cursor: pointer;
-    color: white;
+    color: black;
 }
 .friendtab-popup{
     width: 100%;

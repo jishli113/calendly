@@ -35,8 +35,8 @@ const Social =() => {
     const pers = window.localStorage
 
     useEffect (() =>{
-        
-        
+        ("changed")
+        (isFollowing)
         if(pers.getItem("username")!==username){
             pers.setItem("username",username)
         }
@@ -51,16 +51,16 @@ const Social =() => {
         refreshCount()
     },[])
     useEffect(()=>{
-        
+        ("username changed", username)
     },[username])
     useEffect(()=>{
-        
-        
+        (isLoading, isFollowingLoading)
+        ("adfasd")
         setOpen(false)
         if(pers.getItem("username")!==username){
             pers.setItem("username",username)
         }
-        
+        (pers.getItem("username"), pers.getItem("contextUsername"))
         setIsLoading(true)
         setIsFollowingLoading(true)
             if(pers.getItem("username") === pers.getItem("contextUsername")){
@@ -75,14 +75,14 @@ const Social =() => {
 
     },[username])
     useEffect(()=>{
-        
+        (displayInfo, "display")
     },[displayInfo])
     const notBaseProcedure =async()=>{
             let nbFollowing = await getNonBaseFollowingRequest(`http://localhost:4000/api/isfollowing`, "POST", {forusername:username, followingusername:pers.getItem("contextUsername")})
             detIsFollowing(nbFollowing)
-            
+            ("adfsdaSDGA", nbFollowing)
             let userInfo = await getNonBaseUserData(`http://localhost:4000/api/userinfo`, "POST", {username})
-            
+            (userInfo, "adsfadsga")
             setDisplayInfo(userInfo[0])
             setIsLoading(false)
     }
@@ -92,7 +92,7 @@ const Social =() => {
         setIsLoading(false)
     }
     const detIsFollowing = (data) =>{
-        
+        (data, "detis")
         if (Object.keys(data).length == 0){
             setIsFollowing(false)
         }
@@ -108,11 +108,11 @@ const Social =() => {
         setFollowerSwitch(fol)
     }
     useEffect(()=>{
-        
+        (displayInfo, "ASDFASF")
     },[displayInfo])
 
     const handleFollow = async(updateFollow) =>{
-        
+        ("calleddf")
         if (updateFollow){
             let body = {follower:pers.getItem("contextUsername"), followed:pers.getItem("username")}
             followRequest(`http://localhost:4000/api/follow/`, "POST", body)
@@ -131,7 +131,7 @@ const Social =() => {
         refreshCount()
     }
     async function refreshCount(){
-        
+        (pers.getItem("base"))
         setIsFollowingLoading(true)
         const user = pers.getItem("username")
         const body = {username:user}
