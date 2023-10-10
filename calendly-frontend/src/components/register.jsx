@@ -52,7 +52,6 @@ const Register = () => {
             formValue
           );
         } else {
-          console.log(formValue)
           registerReq = await registerCall(
             `http://localhost:4000/api/register`,
             "POST",

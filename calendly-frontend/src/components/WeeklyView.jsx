@@ -33,7 +33,6 @@ const WeeklyView =(props)=>{
         weekCount(Temporal.PlainDate.from(pers.getItem("selectedDay")))
     },[startDay])
     async function weekCount(date){
-        console.log("ADSFH")
         let temp = date
         let ret = []
         let dates = []

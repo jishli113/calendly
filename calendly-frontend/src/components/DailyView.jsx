@@ -60,10 +60,6 @@ const DailyView = (props) => {
     getCurrentEvents();
   }, [currentDate]);
 
-  useEffect(()=>{
-    console.log(commentsOpen)
-  },[commentsOpen])
-
   useEffect(() => {
     if (currentDate === undefined) {
       setCurrentDate(Temporal.PlainDate.from(pers.getItem("selectedDay")));
@@ -88,7 +84,6 @@ const DailyView = (props) => {
         date: currentDate.toString(),
       }
     );
-    console.log(events)
     if (events !== undefined) {
       let eventsStore = events;
       const localTz = Temporal.Now.timeZone();
