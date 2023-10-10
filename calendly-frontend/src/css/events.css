@@ -4,20 +4,13 @@
     width:15%;
     display: inline-block;
   }
-  .events-body-daily{
+  .events-body{
     height: 100vh;
     flex-grow: 1;
     display: inline-block;
     position:relative;
     width: 100%;
     padding: 0;
-  }
-  .events-body-weekly{
-    height: 100vh;
-    flex-grow: 1;
-    display: inline-block;
-    position:relative;
-    width: 100%;
   }
   .event-display{
     width: 95%;

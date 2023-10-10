@@ -4,9 +4,6 @@ import { faCircle, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { Form } from 'react-bootstrap';
 
 const Tag=(props)=>{
-    useEffect(()=>{
-        (props, "?????")
-    },[])
     return(
         <span className="tag-container" style={{color:props.tag.tagcolor, height:100}}>
             <FontAwesomeIcon icon={faCircle} style={{color:props.tag.tagcolor, margin:1}}></FontAwesomeIcon>

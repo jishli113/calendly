@@ -1,7 +1,6 @@
 
 const useAPICall=()=>{
     async function callAPI(url, method){
-            (url, method)
             let res = await fetch(url,
             {method:method,
                 credentials:'include',

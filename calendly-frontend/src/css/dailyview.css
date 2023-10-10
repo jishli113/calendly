@@ -105,13 +105,8 @@
     
 }
 .like-number{
-    position: absolute;
-    bottom:32%;
-    right: 6%;
-    /* font-size: large; */
+    font-size: 20px;
 }
 .comment-number{
-    position: absolute;
-    bottom:0%;
-    right: 6%;
+    font-size: 20px;
 }

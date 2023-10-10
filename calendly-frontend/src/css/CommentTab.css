@@ -1,0 +1,10 @@
+.comment-username-margin{
+    margin: 7px;
+}
+.comment-tab{
+    border: 0.5px solid;
+    border-color: lightgray;
+}
+.commenttab-username{
+    font-size: 10px;
+}

@@ -28,14 +28,10 @@
   height: 30px;
 }
 .like-icon-row{
-  position: absolute;
-  top: 10%;
-  right: 7%;
+  padding:0;
 }
 .comment-icon-row{
-  position: absolute;
-  bottom:18%;
-  right: 7%;
+  padding: 0;
 }
 .eventcard-card-body{
   position:relative

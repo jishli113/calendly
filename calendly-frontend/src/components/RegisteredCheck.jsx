@@ -12,7 +12,6 @@ const RegisteredCheck=({element})=>{
     },[])
     async function checkStatus(){
         let res = await authenticate(`http://localhost:4000/authenticate`, "POST")
-        (res)
         setIsAuth(res)
     }
     return (

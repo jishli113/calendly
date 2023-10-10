@@ -5,6 +5,7 @@ import { Temporal } from '@js-temporal/polyfill';
 import '../css/weeklyview.css'
 import { Row, Col, Card, Navbar, Container } from 'react-bootstrap';
 import useTimeConversion from '../hooks/useTimeConversion';
+import useAPICallBody from '../hooks/useAPICallBody'
 const WeeklyView =(props)=>{
     const pers = window.localStorage
     const [weekEvents, setWeekEvents] = useState()
@@ -13,6 +14,7 @@ const WeeklyView =(props)=>{
     const [isLoading, setIsLoading] = useState(true)
     const [weekDates, setWeekDates] = useState()
     const {formatTime} = useTimeConversion()
+    const {callAPI:getEvent} = useAPICallBody()
 
 
     useEffect(()=>{
@@ -30,19 +32,17 @@ const WeeklyView =(props)=>{
         }
         weekCount(Temporal.PlainDate.from(pers.getItem("selectedDay")))
     },[startDay])
-
-    useEffect(()=>{
-    },[weekEvents])
     async function weekCount(date){
-        setIsLoading(true)
+        console.log("ADSFH")
         let temp = date
         let ret = []
         let dates = []
         for (let i = 0; i < 7; i ++ ){
-            await fetch(`http://localhost:4000/api/dailyevents/${pers.getItem("contextUsername")}/${temp.toString()}`, 
-            {method:"GET", headers:{"Content-Type":"application/json"}}).then(response=>response.json()).then(response=>ret.push(response))
+            let t = await getEvent(`http://localhost:4000/api/dailyevents/`, "POST",
+            {username:pers.getItem("contextUsername"), date:temp.toString()})
             dates.push(temp.toString())
             temp = temp.add({days:1})
+            ret.push(t)
         }
         setIsLoading(false)
         setWeekEvents(ret)

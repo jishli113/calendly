@@ -14,25 +14,6 @@ function Sidebar(){
     useEffect(()=>{
     })
     return(
-    // <div className='sidebar'>
-    //     <ul className='sidebar-ul'>
-    //         <Link to='/'>
-    //             <li className="calendly-header" key="calendly-logo">
-    //                 Calendly
-    //             </li>
-    //         </Link>
-    //         {SidebarData.map(val => {
-    //             return(
-    //                 <Link className="calendly-header-link" to={(val.title === "Social")?`${val.link}/${pers.getItem("contextUsername")}`:`${val.link}`}>
-    //                     <li className="sidebar-item">
-    //                         <div className='sidebar-title'>{val.title}</div>
-    //                         <div className='sidebar-icon'>{val.icon}</div>
-    //                      </li>
-    //                 </Link>s
-    //         )}
-    //         )}
-    //     </ul>
-    // </div>
     <>
         <Container fluid className='sidebar'>
             <Nav>

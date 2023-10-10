@@ -40,11 +40,8 @@ const Login = () =>{
          };
 
          const onExit = (convertedData) =>{
-            ("here")
             UCsetUsername(convertedData[0].key.username)
-            (convertedData[0].key)
             pers.setItem("contextUsername", convertedData[0].key.username)
-            (convertedData, "cData")
             navigate('/',{replace:true});
          }
         
@@ -61,7 +58,6 @@ const Login = () =>{
 
         const onLogin = async(e) =>{
             e.preventDefault()
-            ("onLogin")
             try {
                 const response = await loginAPICall('http://localhost:4000/api/login', "POST", formValue)
                 updateLoggedIn(response)

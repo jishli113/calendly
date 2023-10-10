@@ -18,14 +18,11 @@
     color:black
 }
 .friendtab-pfp{
-    position: absolute;
-    left:20px;
-    width: 35px;
-    height: 35px;
+    width: 30px;
+    height: 30px;
     border-radius: 100%;
     vertical-align: middle;
     overflow: hidden;
-    border: 2px solid black;
 }
 .friendtab-fol-button{
     position: absolute;
