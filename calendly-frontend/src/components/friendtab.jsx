@@ -24,7 +24,7 @@ const FriendTab = (props) => {
   }, []);
   const getFolStatus = async () => {
     let data = await getFollowingData(
-      `http://localhost:4000/api/isfollowing/`,
+      `http://localhost:4000/api/users/isfollowing/`,
       "POST",
       {
         forusername: props.username,
@@ -45,12 +45,12 @@ const FriendTab = (props) => {
   const handleFol = async () => {
     ("fol");
     if (isFollowing === false) {
-      await callFollow(`http://localhost:4000/api/follow/`, "POST", {
+      await callFollow(`http://localhost:4000/api/users/follow/`, "POST", {
         followed: props.username,
         follower: pers.getItem("contextUsername"),
       });
     } else {
-      await callUnfollow(`http://localhost:4000/api/unfollow/`, "DELETE", {
+      await callUnfollow(`http://localhost:4000/api/users/unfollow/`, "DELETE", {
         unfollower: pers.getItem("contextUsername"),
         beingunfollowed: props.username,
       });

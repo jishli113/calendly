@@ -67,14 +67,14 @@ const Social =() => {
 
     },[username])
     const notBaseProcedure =async()=>{
-            let nbFollowing = await getNonBaseFollowingRequest(`http://localhost:4000/api/isfollowing`, "POST", {forusername:username, followingusername:pers.getItem("contextUsername")})
+            let nbFollowing = await getNonBaseFollowingRequest(`http://localhost:4000/api/users/isfollowing`, "POST", {forusername:username, followingusername:pers.getItem("contextUsername")})
             detIsFollowing(nbFollowing)
-            let userInfo = await getNonBaseUserData(`http://localhost:4000/api/userinfo`, "POST", {username})
+            let userInfo = await getNonBaseUserData(`http://localhost:4000/api/users/info`, "POST", {username})
             setDisplayInfo(userInfo[0])
             setIsLoading(false)
     }
     const baseProcedure = async()=>{
-        let userInfo = await getBaseUserData(`http://localhost:4000/api/userinfo`,"POST", {username})
+        let userInfo = await getBaseUserData(`http://localhost:4000/api/users/info`,"POST", {username})
         setDisplayInfo(userInfo[0])
         setIsLoading(false)
     }
@@ -98,13 +98,13 @@ const Social =() => {
         ("calleddf")
         if (updateFollow){
             let body = {follower:pers.getItem("contextUsername"), followed:pers.getItem("username")}
-            followRequest(`http://localhost:4000/api/follow/`, "POST", body)
+            followRequest(`http://localhost:4000/api/users/follow/`, "POST", body)
             setFollowers(followers + 1)
         }
         else
         {
             let body = {unfollower:pers.getItem("contextUsername"), beingunfollowed:pers.getItem("username")}
-            unfollowRequest(`http://localhost:4000/api/unfollow/`,"POST", body)
+            unfollowRequest(`http://localhost:4000/api/users/unfollow/`,"POST", body)
             setFollowers(followers - 1)
         }
         setIsFollowing(updateFollow)
@@ -118,8 +118,8 @@ const Social =() => {
         setIsFollowingLoading(true)
         const user = pers.getItem("username")
         const body = {username:user}
-        let followers = await getFollowerCount(`http://localhost:4000/api/followercount`,"POST", body)
-        let following = await getFollowingCount(`http://localhost:4000/api/followingcount`,"POST", body)
+        let followers = await getFollowerCount(`http://localhost:4000/api/users/followercount`,"POST", body)
+        let following = await getFollowingCount(`http://localhost:4000/api/users/followingcount`,"POST", body)
         setFollowers(parseInt((followers[0])["count"]))
         setFollowing(parseInt((following[0])["count"]))
         setIsFollowingLoading(false)

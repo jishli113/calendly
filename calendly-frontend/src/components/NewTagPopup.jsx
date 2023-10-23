@@ -38,7 +38,7 @@ const NewTagPopup = (props) => {
       return;
     }
     let result = await callCreateTag(
-      `http://localhost:4000/api/createtag`,
+      `http://localhost:4000/api/tags/`,
       "POST",
       body
     );

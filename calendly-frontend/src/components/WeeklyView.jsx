@@ -37,7 +37,7 @@ const WeeklyView =(props)=>{
         let ret = []
         let dates = []
         for (let i = 0; i < 7; i ++ ){
-            let t = await getEvent(`http://localhost:4000/api/dailyevents/`, "POST",
+            let t = await getEvent(`http://localhost:4000/api/events/daily/`, "POST",
             {username:pers.getItem("contextUsername"), date:temp.toString()})
             dates.push(temp.toString())
             temp = temp.add({days:1})

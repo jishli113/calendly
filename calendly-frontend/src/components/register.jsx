@@ -47,13 +47,14 @@ const Register = () => {
         formValue.append("pfpimg", selectedImage && image);
         if (formValue.get("pfpimg") === "false") {
           registerReq = await registerCall(
-            `http://localhost:4000/api/registerdefault`,
+            `http://localhost:4000/api/register/default`,
             "POST",
             formValue
           );
         } else {
           registerReq = await registerCall(
-            `http://localhost:4000/api/register`,
+            `http://localhost:4000/api/register/
+          }}}`,
             "POST",
             formValue
           );

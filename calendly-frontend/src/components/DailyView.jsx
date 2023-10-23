@@ -77,7 +77,7 @@ const DailyView = (props) => {
 
   async function getCurrentEvents() {
     let events = await callGetEvents(
-      `http://localhost:4000/api/dailyevents/`,
+      `http://localhost:4000/api/events/daily/`,
       "POST",
       {
         username: pers.getItem("contextUsername"),

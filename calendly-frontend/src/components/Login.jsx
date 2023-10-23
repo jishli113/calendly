@@ -59,7 +59,7 @@ const Login = () =>{
         const onLogin = async(e) =>{
             e.preventDefault()
             try {
-                const response = await loginAPICall('http://localhost:4000/api/login', "POST", formValue)
+                const response = await loginAPICall('http://localhost:4000/api/login/', "POST", formValue)
                 updateLoggedIn(response)
             } catch (error) {
                 console.error(error.message)

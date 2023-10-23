@@ -133,7 +133,7 @@ const NewEventPopup = (props) => {
   }
   async function refreshTags() {
     let tags = await getTags(
-      `http://localhost:4000/api/getalltags/${username}`
+      `http://localhost:4000/api/tags/${username}`
     );
     setTagList(tags);
   }
@@ -231,7 +231,7 @@ const NewEventPopup = (props) => {
     formData.append("eventImage", selectedImage && image);
     formData.append("active", false)
     let result = await createEventCall(
-      `http://localhost:4000/api/createevent`,
+      `http://localhost:4000/api/events/`,
       "POST",
       formData
     )

@@ -18,7 +18,7 @@ const Settings = () => {
     const logout = async(e) =>{
         e.preventDefault()
         try {
-            await logOutUpdate(`http://localhost:4000/api/logout/`, "POST")
+            await logOutUpdate(`http://localhost:4000/api/users/logout/`, "POST")
             navigate('/login', {replace:true})
             
         } catch (error) {

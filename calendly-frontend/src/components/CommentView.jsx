@@ -17,7 +17,7 @@ const CommentView =(props) =>{
         loadComments()
     },[])
     async function loadComments(){
-        let comments = await callAPIBody('http://localhost:4000/api/getcomments',"POST", {username:props.username, eventname:props.eventname})
+        let comments = await callAPIBody('http://localhost:4000/api/comments/retrieve',"POST", {username:props.username, eventname:props.eventname})
         setCommentThread(comments)
         setIsLoading(false)
     }
@@ -26,7 +26,7 @@ const CommentView =(props) =>{
     }
 
     async function postComment(){
-        let postResponse = await callAPIBody('http://localhost:4000/api/comment', "POST", {comment:comment, eventusername:props.username, eventname:props.eventname})
+        let postResponse = await callAPIBody('http://localhost:4000/api/comments/', "POST", {comment:comment, eventusername:props.username, eventname:props.eventname})
         //if successful reload the comment thread or temporarily add it to the thread
     }
     function handlePostComment(){

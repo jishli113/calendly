@@ -23,7 +23,7 @@ function FolPopup(props) {
   const getFolData = async (fol) => {
     const tag = fol ? "followers" : "following"
     let folData = await getUserFolData(
-      `http://localhost:4000/api/${tag}`,
+      `http://localhost:4000/api/users/${tag}`,
       "POST",
       { username: props.username }
     )

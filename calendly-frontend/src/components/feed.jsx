@@ -12,6 +12,9 @@ import Tag from "./Tag";
 import "../css/feed.css";
 import CommentView from "./CommentView";
 const Feed = () => {
+  const {
+    contextUsername,
+  } = useContext(UserContext);
   const pers = window.localStorage;
   let username =
     pers.getItem("contextUsername") == null
@@ -19,9 +22,6 @@ const Feed = () => {
       : pers.getItem("contextUsername");
   const { callAPI } = useAPICallBody();
   const [feedLoading, setFeedLoading] = useState(true);
-  const {
-    contextUsername,
-  } = useContext(UserContext);
   const { convertToUTC} = useTimeConversion();
   const [feedEvents, setFeedEvents] = useState();
   const [selectedCommentsUsername, setSelectedCommentsUsername] = useState()
@@ -42,7 +42,7 @@ const Feed = () => {
     )
     const body = { username: username, date: date.toString().substring(0, 10) }
     let temp = await callAPI(
-      `http://localhost:4000/api/feedevents`,
+      `http://localhost:4000/api/events/feed`,
       "POST",
       body
     )
@@ -115,10 +115,10 @@ const FeedEvents = (props) => {
     setLiked(!liked)
     const body = {eventusername:props.event.forusername, eventname:props.event.eventname}
     if (!liked){
-      await decrementLike('http://localhost:4000/api/incrementlike', "POST", body)
+      await decrementLike('http://localhost:4000/api/events/incrementlike', "POST", body)
     }
     else{
-      await incrementLike('http://localhost:4000/api/decrementlike', "POST", body)
+      await incrementLike('http://localhost:4000/api/events/decrementlike', "POST", body)
     }
   }
   return (
