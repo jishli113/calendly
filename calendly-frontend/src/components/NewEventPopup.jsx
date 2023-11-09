@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import "../css/neweventpopup.css";
 import Form from "react-bootstrap/Form";
-import Select from "react-dropdown-select";
 import Button from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,7 +15,6 @@ import {
   faPlusCircle,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import DatePicker from "react-date-picker";
 import { Row, Col, Container, Image } from "react-bootstrap";
 import useAPICallBody from "../hooks/useAPICallBody";
 import useAPICall from "../hooks/useAPICall";
@@ -69,6 +67,7 @@ const NewEventPopup = (props) => {
       pers.setItem("contextUsername", contextUsername);
     }
     refreshTags();
+    console.log("called")
     getExistingEvents();
   }, []);
   useEffect(() => {
@@ -92,9 +91,11 @@ const NewEventPopup = (props) => {
   }, [endTime]);
   useEffect(() => {}, [selectedImage]);
   async function getExistingEvents() {
+    console.log("here>>")
     let events = await getEvents(
-      `http://localhost:4000/api/geteventnames/${username}`
+      `http://localhost:4000/api/events/names/${username}`
     );
+    console.log(events)
     setEventNames(events);
   }
   async function checkNext() {
@@ -174,7 +175,7 @@ const NewEventPopup = (props) => {
     const endHour = parseInt(endTime.substring(0, 2));
     const endMinute = parseInt(endTime.substring(3, 5));
     let start = convertToUTC(
-      Temporal.Now.timeZone(),
+      Temporal.Now.timeZoneId(),
       sd.year,
       sd.month,
       sd.day,
@@ -182,7 +183,7 @@ const NewEventPopup = (props) => {
       startMinute
     );
     let end = convertToUTC(
-      Temporal.Now.timeZone(),
+      Temporal.Now.timeZoneId(),
       ed.year,
       ed.month,
       ed.day,

@@ -9,6 +9,7 @@ const upload = multer({storage: storage})
 const { Temporal } = require('@js-temporal/polyfill')
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const cors = require('cors')
+const crypto = require('crypto')
 const corsOptions = {
     origin:'http://localhost:3000',
     credentials:true,
@@ -24,7 +25,7 @@ app.all('*',function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
     });
-
+const randomName = (bytes = 32) => crypto.randomBytes(bytes).toString()
 
 const bucketName = process.env.AWS_BUCKET_NAME
 const bucketRegion = process.env.AWS_BUCKET_REGION
@@ -54,6 +55,13 @@ router.route('/').post(upload.single('eventImage'), async(req,res)=>{
         await s3.send(command)
         const response = await pool.query(
             "INSERT INTO events (username, dates, starthour, startminute, endhour, endminute, eventname, selectedtags, imageKey, active) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",[username, dates, startHour, startMinute, endHour, endMinute, eventName, selectedTags, imageKey, active]
+        )
+        await pool.query(
+            "CALL new_event_eventstat($1, $2, $3)", [username, eventName, imageKey]
+        )
+
+        await pool.query(
+            "CALL update_events()"
         )
         res.json({status:"success"})
     } catch (error) {
@@ -95,7 +103,7 @@ router.route('/daily').post(async(req,res)=>{
         const response = await pool.query(
             "SELECT * FROM eventstats INNER JOIN (SELECT * FROM events WHERE username = $1 AND ($2 = ANY(json_array_to_text_array(events.dates)) OR $3 = ANY(json_array_to_text_array(events.dates))))e ON eventstats.username = e.username AND eventstats.eventname = e.eventname",[username, date, date2]
         )
-        const tz = Temporal.Now.timeZone()
+        const tz = Temporal.Now.timeZoneId()
         for (e in response.rows){
             const getObjectParams = {
                 Bucket: bucketName,

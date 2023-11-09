@@ -2,7 +2,6 @@ import React, { Component, useState, useEffect } from "react";
 import "../css/events.css";
 import Sidebar from "./Sidebar";
 import Calendar from "react-calendar";
-import Select from "react-select";
 import DailyView from "./DailyView";
 import WeeklyView from "./WeeklyView";
 import { Button, FormSelect } from "react-bootstrap";

@@ -4,6 +4,8 @@ import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CommentView from "./CommentView";
+import useAlterEvents from "../hooks/useAlterEvents";
+import DailyViewCard from "./DailyViewCard";
 import {
   faChevronRight,
   faChevronLeft,
@@ -13,10 +15,7 @@ import {
 import { Temporal } from "@js-temporal/polyfill";
 import useAPICall from "../hooks/useAPICallBody";
 import "../css/dailyview.css";
-import { Card, Col, Row, Image } from "react-bootstrap";
 import useTimeConversion from "../hooks/useTimeConversion";
-import Tag from "./Tag";
-import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
 import useAPICallBody from "../hooks/useAPICallBody";
 const DailyView = (props) => {
   const pers = window.localStorage;
@@ -52,6 +51,7 @@ const DailyView = (props) => {
   const [isRetrieving, setIsRetrieving] = useState(true);
   const [displayedEvents, setDisplayedEvents] = useState();
   const [commentsOpen, setCommentsOpen] = useState(false)
+  const {getCurrentEvents:alter} = useAlterEvents()
 
   useEffect(() => {
     if (currentDate !== undefined) {
@@ -69,99 +69,12 @@ const DailyView = (props) => {
     setCurrentDate(props.day);
   }, [props.day]);
 
-  function timeComparator(obj1, obj2) {
-    return obj1.starthour != obj2.starthour
-      ? obj1.starthour - obj2.starthour
-      : obj1.startminute - obj2.st;
-  }
 
   async function getCurrentEvents() {
-    let events = await callGetEvents(
-      `http://localhost:4000/api/events/daily/`,
-      "POST",
-      {
-        username: pers.getItem("contextUsername"),
-        date: currentDate.toString(),
-      }
-    );
-    if (events !== undefined) {
-      let eventsStore = events;
-      const localTz = Temporal.Now.timeZone();
-      const dateOne = currentDate;
-      const dateTwo = dateOne.add({ days: 1 });
-      for (var i = 0; i < events.length; i++) {
-        let temp = undefined;
-        let d1bool = false;
-        let d2bool = false
-        for (var j = 0; j < events[i].dates.length; j++) {
-          d1bool = d1bool || dateOne.toString() == events[i].dates[j];
-          d2bool = d2bool || dateTwo.toString() == events[i].dates[j];
-        }
-        if ((d1bool || d2bool) && (!d1bool || !d2bool)) {
-          if (d1bool) {
-            temp = convertToLocal(
-              localTz,
-              dateOne.year,
-              dateOne.month,
-              dateOne.day,
-              events[i].starthour,
-              events[i].startminute
-            );
-            if (
-              temp.year != dateOne.year ||
-              temp.month != dateOne.month ||
-              temp.day != dateOne.day
-            ) {
-              eventsStore.splice(i, 1);
-              i = i - 1;
-              continue;
-            }
-          }
-          if (d2bool) {
-            temp = convertToLocal(
-              localTz,
-              dateTwo.year,
-              dateTwo.month,
-              dateTwo.day,
-              events[i].starthour,
-              events[i].startminute
-            );
-            if (
-              temp.year != dateOne.year ||
-              temp.month != dateOne.month ||
-              temp.day != dateOne.day
-            ) {
-              eventsStore.splice(i, 1);
-              i = i - 1;
-              continue;
-            }
-          }
-        }
-        temp = convertToLocal(
-          localTz,
-          dateOne.year,
-          dateOne.month,
-          dateOne.day,
-          events[i].starthour,
-          events[i].startminute
-        );
-        eventsStore[i].starthour = temp.hour;
-        eventsStore[i].startminute = temp.minute;
-        temp = convertToLocal(
-          localTz,
-          dateOne.year,
-          dateOne.month,
-          dateOne.day,
-          events[i].endhour,
-          events[i].endminute
-        );
-        eventsStore[i].endhour = temp.hour;
-        eventsStore[i].endminute = temp.minute;
-      }
+      let temp = await alter(pers.getItem("contextUsername"), currentDate)
       setIsRetrieving(false);
-      setDisplayedEvents(eventsStore.sort(timeComparator));
+      setDisplayedEvents(temp);
     }
-  }
 
   const nextDay = () => {
     setCurrentDate((currentDate) => currentDate.add({ days: 1 }));
@@ -171,9 +84,6 @@ const DailyView = (props) => {
     setCurrentDate((currentDate) => currentDate.add({ days: -1 }));
   };
 
-  function refactorDate() {
-    return currentDate.toString();
-  }
 
   function handleCommentOpen(eventname, username){
     setCommentsOpen(true)
@@ -214,76 +124,3 @@ const DailyView = (props) => {
 
 export default DailyView;
 
-const DailyViewCard = (props) => {
-  const { formatTime } = useTimeConversion();
-  return (
-    <Container>
-      <Row className="daily-view-card-parent-row">
-        <Col lg={{ span: 8, offset: 2 }} className="daily-event-col">
-          <Card className="eventcard">
-            <Card.Header className="dailyview-card-header">
-              <h1 className="dailyview-card-event-text">
-                {props.props.eventname}
-              </h1>
-              <p className="dailyview-card-time-text">{`${formatTime(
-                props.props.starthour,
-                props.props.startminute
-              )} - ${formatTime(
-                props.props.endhour,
-                props.props.endminute
-              )}`}</p>
-            </Card.Header>
-            <Card.Body className="eventcard-card-body">
-              <Container>
-                <Row>
-                <Col lg={{ span: 5, offset: 2 }}>
-                  <Image
-                    roundedCircle
-                    src={props.props.eventurl}
-                    className="event-image"
-                    size={20}
-                  ></Image>
-                </Col>
-                <Col lg={{ span: 2, offset: 3 }}>
-                  <Row className="like-icon-row">
-                    <FontAwesomeIcon
-                      icon={faHeart}
-                      className="like-icon"
-                    ></FontAwesomeIcon>
-                  </Row>
-                  <Row className="my-2">
-                    <h3 className="like-number">{props.props.likes.length}</h3>
-                  </Row>
-                  <Row className="comment-icon-row">
-                    <FontAwesomeIcon
-                      icon={faComment}
-                      className="comment-icon"
-                      onClick={()=>props.handleComment(props.props.eventname, props.props.username)}
-                    ></FontAwesomeIcon>
-                  </Row>
-                  <Row className="my-2 align-items-right">
-                    <h3 className="comment-number">
-                      {props.props.usercomments.length}
-                    </h3>
-                  </Row>
-                </Col>
-                </Row>
-              </Container>
-            </Card.Body>
-            <Card.Footer>
-              <Row>Tags:</Row>
-              <Row>
-                <div>
-                  {props.props.selectedtags.length > 0 &&
-                    props.props.selectedtags.map((tag) => (
-                      <Tag tag={tag}> </Tag>
-                    ))}
-                </div>
-              </Row>
-            </Card.Footer>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
-  );
-};

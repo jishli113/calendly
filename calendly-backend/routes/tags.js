@@ -2,8 +2,16 @@ const express = require('express')
 const app = express()
 const router = express.Router()
 const pool = require('../db') 
+const cors = require('cors')
+const corsOptions = {
+    origin:'http://localhost:3000',
+    credentials:true,
+    optionSuccessStatus:200,
+    methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD", "PATCH", "DELETE"],
+      
+}
 
-app.post('/', async(req,res)=>{
+router.route('/').post(async(req,res)=>{
     try {
         const {tagName, tagcolor, username} = req.body
         const response = await pool.query(
@@ -16,7 +24,7 @@ app.post('/', async(req,res)=>{
 
 
 })
-app.get('/', async(req,res)=>{
+router.route('/').get(async(req,res)=>{
     try {
         const {tagName, selectedTagColor, username} = req.params
         const response = await pool.query(
@@ -27,7 +35,7 @@ app.get('/', async(req,res)=>{
         console.error(error.message)
     }
 })
-app.get('/all', async(req,res)=>{
+router.route('/all').get(async(req,res)=>{
     try {
         const response = await pool.query(
             "SELECT * FROM tags"
@@ -38,7 +46,7 @@ app.get('/all', async(req,res)=>{
     }
 })
 
-app.get('/:username',async(req,res)=>{
+router.route('/:username').get(async(req,res)=>{
     try {
         const {username} = req.params
         const response = await pool.query(

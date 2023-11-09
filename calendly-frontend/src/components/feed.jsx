@@ -33,7 +33,7 @@ const Feed = () => {
   async function retrieveFeed() {
     let c = Temporal.Now.plainDateTimeISO();
     let date = convertToUTC(
-      Temporal.Now.timeZone(),
+      Temporal.Now.timeZoneId(),
       c.year,
       c.month,
       c.day,

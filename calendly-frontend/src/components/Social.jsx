@@ -11,6 +11,10 @@ import useAPICall from '../hooks/useAPICall';
 import { Button, Image } from 'react-bootstrap';
 import useAPICallBody from '../hooks/useAPICallBody';
 import {Container, Row, Col} from 'react-bootstrap'
+import useAlterEvents from '../hooks/useAlterEvents';
+import { Temporal } from "@js-temporal/polyfill";
+import DailyViewCard from './DailyViewCard';
+import CommentView from './CommentView';
 
 const Social =() => {
     const {contextUsername} = useContext(UserContext)
@@ -20,6 +24,7 @@ const Social =() => {
     const [followers,setFollowers] = useState()
     const [following, setFollowing] = useState()
     const [isLoading, setIsLoading] = useState(true)
+    const [isLoadingEvents, setIsLoadingEvents] = useState(true)
     const [isFollowingLoading, setIsFollowingLoading] = useState(true)
     const {username} = useParams()
     const {callAPI:getNonBaseFollowingRequest} = useAPICallBody()
@@ -29,7 +34,13 @@ const Social =() => {
     const {callAPI:getFollowingCount} = useAPICallBody()
     const {callAPI:followRequest} = useAPICallBody()
     const {callAPI:unfollowRequest} = useAPICallBody()
+    const {getCurrentEvents:alter} = useAlterEvents()
     const [displayInfo, setDisplayInfo] = useState()
+    const [displayedEvents, setDisplayedEvents] = useState()
+    const [commentsOpen, setCommentsOpen] = useState(false)
+    const [selectedCommentsEventname, setSelectedCommentsEventname] = useState()
+    const [selectedCommentsUsername ,setSelectedCommentsUsername] = useState()
+    const[currentDate, setCurrentDate] = useState(Temporal.Now.plainDateISO())
 
     
     const pers = window.localStorage
@@ -47,7 +58,16 @@ const Social =() => {
             }
         }
         refreshCount()
+        getCurrentEvents()
     },[])
+
+    async function getCurrentEvents() {
+        let temp = await alter(pers.getItem("username"), currentDate)
+        console.log(temp, pers.getItem("username"))
+        setIsLoadingEvents(false);
+        setDisplayedEvents(temp);
+        }
+
     useEffect(()=>{
         setOpen(false)
         if(pers.getItem("username")!==username){
@@ -88,7 +108,14 @@ const Social =() => {
         setIsFollowingLoading(false)
     }
 
-
+    function handleCommentOpen(eventname, username){
+        setCommentsOpen(true)
+        setSelectedCommentsEventname(eventname)
+        setSelectedCommentsUsername(username)
+      }
+      function handleCommentClose(){
+        setCommentsOpen(false)
+      }
     const openPopup = (fol) => {
         setOpen(!open)
         setFollowerSwitch(fol)
@@ -160,12 +187,22 @@ const Social =() => {
                         }
 
                     </Col>
+                    <Col lg={{span:8}}>
+                    <div className="dailyview-events">
+                        {!isLoadingEvents &&
+                        displayedEvents.map((event) => (
+                            <DailyViewCard props={event} handleComment = {handleCommentOpen}></DailyViewCard>
+                        ))}
+                    </div>
+                    </Col>
 
                 </Row>
                 </Container>
                 {open && <FolPopup className="fol-popup-social" trigger={true} folswitch={followerSwitch} handleClose={handleClose} username={username}>
                 // </FolPopup>}
+                {commentsOpen ? <CommentView handleClose ={handleCommentClose} username={selectedCommentsUsername} eventname={selectedCommentsEventname}></CommentView> : ""}
                 </>
+                
 
         )
     } 
