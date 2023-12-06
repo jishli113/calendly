@@ -24,6 +24,7 @@ const WeeklyView =(props)=>{
         if (startDay == undefined){
             setStartDay(Temporal.PlainDate.from(pers.getItem("selectedDay")))
         }
+        
     },[])
 
     useEffect(()=>{
@@ -70,7 +71,7 @@ const WeeklyView =(props)=>{
             })}
                 </div>
                     </Col>
-                }):<h1>adf</h1>}
+                }):<></>}
         </Row>
         </Container>
     )

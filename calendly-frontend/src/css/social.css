@@ -14,3 +14,10 @@
    padding: 0;
    height: 100vh;
 }
+.follow-request-icon{
+  height: 40px;
+}
+.noti-card{
+  margin-left: 20px;
+  border-width: 30px;
+}

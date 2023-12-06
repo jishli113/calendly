@@ -5,15 +5,19 @@ import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
 import { Card, Col, Row, Image, Container } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
+import { useEffect } from "react";
 
 const DailyViewCard = (props) => {
+  useEffect(()=>{
+    console.log(props);
+  },[])
     const { formatTime } = useTimeConversion();
     return (
       <Container>
         <Row className="daily-view-card-parent-row">
           <Col lg={{ span: 8, offset: 2 }} className="daily-event-col">
             <Card className="eventcard">
-            {!props.props.active && <div className="non-active-cover"> <FontAwesomeIcon icon={faLock} className="non-active-lock-logo"></FontAwesomeIcon><div></div>
+            {!props.props.active && <div className="non-active-cover"> <div></div>
                   </div>}
               <Card.Header className="dailyview-card-header">
                 <h1 className="dailyview-card-event-text">
@@ -30,7 +34,7 @@ const DailyViewCard = (props) => {
               <Card.Body className="eventcard-card-body">
                 <Container>
                   <Row>
-                  <Col lg={{ span: 5, offset: 2 }}>
+                  <Col lg={{ span: 3, offset: 4 }}>
                   <Image roundedCircle src={props.props.eventurl} className={props.props.active ? "event-image" : "event-image-non-active"} size={20}></Image>
                   </Col>
                   <Col lg={{ span: 2, offset: 3 }}>

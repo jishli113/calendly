@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import { faNoteSticky } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faNoteSticky } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserGroup } from '@fortawesome/free-solid-svg-icons'
 import { faGear } from '@fortawesome/free-solid-svg-icons'

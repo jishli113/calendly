@@ -8,6 +8,7 @@ import useTimeConversion from "../hooks/useTimeConversion";
 import { Container, Row, Card, Col, Image } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
+import useUpdateEvents from "../hooks/useUpdateEvents";
 import Tag from "./Tag";
 import "../css/feed.css";
 import CommentView from "./CommentView";
@@ -27,9 +28,14 @@ const Feed = () => {
   const [selectedCommentsUsername, setSelectedCommentsUsername] = useState()
   const [selectedCommentsEventname, setSelectedCommentsEventname] = useState()
   const [commentsOpen, setCommentsOpen] = useState(false)
+  const {update:updateHook} = useUpdateEvents()
   useEffect(() => {
     retrieveFeed();
+    update();
   }, []);
+  async function update(){
+    await updateHook()
+  }
   async function retrieveFeed() {
     let c = Temporal.Now.plainDateTimeISO();
     let date = convertToUTC(
@@ -91,7 +97,7 @@ const FeedEvents = (props) => {
     let stime = Temporal.Now.plainDateTimeISO();
     let etime = Temporal.Now.plainDateTimeISO();
     stime = convertToLocal(
-      Temporal.Now.timeZone(),
+      Temporal.Now.timeZoneId(),
       stime.year,
       stime.month,
       stime.day,
@@ -99,7 +105,7 @@ const FeedEvents = (props) => {
       props.event.startminute
     );
     etime = convertToLocal(
-      Temporal.Now.timeZone(),
+      Temporal.Now.timeZoneId(),
       etime.year,
       etime.month,
       etime.day,

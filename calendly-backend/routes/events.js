@@ -118,6 +118,14 @@ router.route('/daily').post(async(req,res)=>{
         console.error(error.message)
     }
 })
+router.route('/updateevents').post(async(req,res)=>{
+    try {
+        await pool.query("CALL update_events()")
+    } catch (error) {
+        console.error(error)
+    }
+
+})
 router.route('/feed').post(async(req,res)=>{
     try {
         const {username, date} = req.body
@@ -163,6 +171,18 @@ router.route('/decrementlike').post(async(req,res)=>{
     catch(error){
         console.error(error.message)
     }
+})
+router.route('/folreqnotis').post(async(req,res)=>{
+    try {
+        const {username} = req.body
+        const response = await pool.query(
+            "SELECT * FROM followrequests WHERE requested = $1",[username]
+        )
+        res.json(response.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+    
 })
 
 module.exports = router;

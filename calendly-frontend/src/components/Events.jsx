@@ -10,15 +10,20 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import NewEventPopUp from "./NewEventPopup";
 import { Temporal } from "@js-temporal/polyfill";
 import { Container, Row, Col, Form } from "react-bootstrap";
+import useUpdateEvents from "../hooks/useUpdateEvents";
 
 const Events = () => {
   const pers = window.localStorage;
   const [selectedDay, setSelectedDay] = useState(Temporal.Now.plainDateISO());
   const [passSelectedDay, setPassSelectedDay] = useState(false);
+  const {update:updateHook} = useUpdateEvents();
   const [selectedTime, setSelectedTime] = useState(
     pers.getItem("selected") !== "null" ? pers.getItem("selected") : "daily"
   );
   const [isPoppedUp, setIsPoppedUp] = useState(false);
+  useEffect(()=>{
+    update()
+  },[])
   useEffect(() => {
     if (selectedTime !== undefined) {
       pers.setItem("selected", selectedTime);
@@ -33,7 +38,9 @@ const Events = () => {
   useEffect(() => {
     ("adsf");
   }, [isPoppedUp]);
-
+ async function update(){
+    await updateHook()
+ }
   const handleClose = () => {
     setIsPoppedUp(false);
   };
@@ -55,7 +62,7 @@ const Events = () => {
                 "events-body"
               }
             >
-              <Col lg={5}>
+              <Col lg={12}>
                 <Row>
                   <Col lg={3} className="my-5">
                     <Form.Select

@@ -4,11 +4,10 @@ import Sidebar from './Sidebar';
 import FolPopup from './FolPopup.jsx'
 import { useState,useContext,useEffect } from 'react';
 import { UserContext } from './UserContext';
-import { faUserPlus, faUserCheck } from '@fortawesome/free-solid-svg-icons'
+import { faUserPlus, faUserCheck, faHandshake, faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import useAPICall from '../hooks/useAPICall';
-import { Button, Image } from 'react-bootstrap';
+import { Button, Card, Image } from 'react-bootstrap';
 import useAPICallBody from '../hooks/useAPICallBody';
 import {Container, Row, Col} from 'react-bootstrap'
 import useAlterEvents from '../hooks/useAlterEvents';
@@ -84,7 +83,7 @@ const Social =() => {
                 notBaseProcedure()
             }
         refreshCount()
-
+        getCurrentEvents()
     },[username])
     const notBaseProcedure =async()=>{
             let nbFollowing = await getNonBaseFollowingRequest(`http://localhost:4000/api/users/isfollowing`, "POST", {forusername:username, followingusername:pers.getItem("contextUsername")})
@@ -183,6 +182,28 @@ const Social =() => {
                                            :<Button> Following  <FontAwesomeIcon className="follow-button"icon={faUserCheck} onClick={()=>handleFollow(false)}/></Button>):<></>}
                             </Col>
                     </Row>
+                    {pers.getItem("contextUsername") == pers.getItem("username") ? <>
+                        <Row className='my-5'>
+                            <Card className="noti-card border-dark">
+                                <div style={{display:'inline-flex'}}>
+                                <Col lg={{span:4, offset:3}}><Card.Title style={{marginTop:'auto', marginBottom:'auto'}}>Follow Requests</Card.Title></Col>
+                                    <Col lg={{span:2, offset:1}}>
+                                        <FontAwesomeIcon icon={faHandshake} className='follow-request-icon'></FontAwesomeIcon>
+                                    </Col>
+                                </div>
+                            </Card>
+                        </Row>
+                        <Row>
+                            <Card className="noti-card border-dark">
+                                <div style={{display:'inline-flex'}}>
+                                <Col lg={{span:4, offset:3}}><Card.Title style={{marginTop:'auto', marginBottom:'auto'}}>Event Interactions</Card.Title></Col>
+                                    <Col lg={{span:2, offset:1}}>
+                                        <FontAwesomeIcon icon={faCircleExclamation} className='follow-request-icon'></FontAwesomeIcon>
+                                    </Col>
+                                </div>
+                            </Card>
+                        </Row>
+                        </>:<></>}
                             </>
                         }
 
