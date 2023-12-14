@@ -77,7 +77,7 @@ app.use(function (err, req, res, next) {
 
 app.use('/api/login', loginRoute)
 app.use('/api/comments', authorization, commentsRoute)
-app.use('/api/register', authorization, registerRoute)
+app.use('/api/register', registerRoute)
 app.use('/api/events', authorization, eventsRoute)
 app.use('/api/tags', authorization, tagsRoute)
 app.use('/api/users', usersRoute)

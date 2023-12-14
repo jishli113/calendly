@@ -46,6 +46,7 @@ const Register = () => {
         let registerReq = null;
         formValue.append("pfpimg", selectedImage && image);
         if (formValue.get("pfpimg") === "false") {
+          console.log("dfalt")
           registerReq = await registerCall(
             `http://localhost:4000/api/register/default`,
             "POST",

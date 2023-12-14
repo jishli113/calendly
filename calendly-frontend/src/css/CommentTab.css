@@ -4,6 +4,7 @@
 .comment-tab{
     border: 0.5px solid;
     border-color: lightgray;
+    z-index: 100;
 }
 .commenttab-username{
     font-size: 10px;

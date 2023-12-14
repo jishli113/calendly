@@ -23,7 +23,7 @@ const s3 = new S3Client({
 
 
 
-app.post('/default', upload.single(), async (req,res) =>{
+router.route('/default').post(upload.single(), async (req,res) =>{
     const {username, firstname, lastname, password, email} = req.body
     let uid = undefined
     firebase.auth().createUserWithEmailAndPassword(email, password).then(async (userCredential)=>{
@@ -35,10 +35,11 @@ app.post('/default', upload.single(), async (req,res) =>{
             await pool.query(
                 "INSERT into userinfo (username, firstname, lastname, email) VALUES($1, $2, $3, $4)",[username, firstname, lastname, email]
             )
+            await pool.query("INSERT into settings (username, private) VALUES($1, true)", [username])
         return res.json({status:"success", data:newUser.rows[0]})
     }).catch(function(error){
         console.error(error.message)
-        (error.code, "ERRORCODEEEE")
+        (error.code, "ERRORCODE")
         let msg = "Registration Failed"
         if (error.code === "auth/email-already-in-use"){
             msg = "Email already has an account registered"
@@ -46,7 +47,7 @@ app.post('/default', upload.single(), async (req,res) =>{
         res.json({status:"failed", message:msg})
     })
 })
-app.post('/',  upload.single('pfpimg'), async (req,res) =>{
+router.route('/').post(upload.single('pfpimg'), async (req,res) =>{
     const {username, firstname, lastname, password, email} = req.body
     let uid = undefined
     firebase.auth().createUserWithEmailAndPassword(email, password).then(async (userCredential)=>{

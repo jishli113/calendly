@@ -134,7 +134,7 @@ router.route('/follow').post(async(req,res)=>{
   try {
       const {follower, followed} = req.body
       const response = await pool.query(
-          "INSERT INTO following (forusername, followingusername) VALUES($1,$2)",[followed, follower]
+          "INSERT INTO following (forusername, followingusername) VALUES($1,$2, false)",[followed, follower]
       )
       res.json(response.rows)
   } catch (error) {
@@ -199,5 +199,43 @@ router.route('/logout').post(async (req,res)=>{
         console.error(error.message)
     }
 })
+router.route('/isprivate').post(async(req,res)=>{
+    try {
+        const {username} = req.body
+        let response = await pool.query(
+            "SELECT * FROM settings WHERE username = $1", [username]
+        );
+        res.json(response.rows[0].private)
+        
+    } catch (error) {
+        console.error(error.message)
+    }
+
+})
+router.route('/followrequest').post(async(req,res)=>{
+    try {
+        const {requester, requested} = req.body
+        await pool.query(
+            "INSERT INTO followrequests (requester, requested) VALUES($1, $2)", [requester, requested]
+        )
+    } catch (error) {
+        console.error(error.message)
+    }
+
+})
+router.route('/followrequests').post(async(req,res)=>{
+    try {
+        const {username} = req.body
+        let r = await pool.query(
+            "SELECT * FROM followrequests WHERE requested = $1",[username]
+        )
+        console.log(r.rows)
+        res.json(r.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+
+router.route('/')
 
 module.exports = router;

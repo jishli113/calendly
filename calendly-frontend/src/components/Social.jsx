@@ -4,7 +4,7 @@ import Sidebar from './Sidebar';
 import FolPopup from './FolPopup.jsx'
 import { useState,useContext,useEffect } from 'react';
 import { UserContext } from './UserContext';
-import { faUserPlus, faUserCheck, faHandshake, faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { faUserPlus, faUserCheck, faHandshake, faCircleExclamation, faCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Button, Card, Image } from 'react-bootstrap';
@@ -14,9 +14,9 @@ import useAlterEvents from '../hooks/useAlterEvents';
 import { Temporal } from "@js-temporal/polyfill";
 import DailyViewCard from './DailyViewCard';
 import CommentView from './CommentView';
+import NotificationsSideBar from './NotificationsSideBar.jsx';
 
 const Social =() => {
-    const {contextUsername} = useContext(UserContext)
     const [open, setOpen] = useState(false)
     const [followerSwitch, setFollowerSwitch] = useState(true)
     const [isFollowing, setIsFollowing] = useState(false)
@@ -33,13 +33,24 @@ const Social =() => {
     const {callAPI:getFollowingCount} = useAPICallBody()
     const {callAPI:followRequest} = useAPICallBody()
     const {callAPI:unfollowRequest} = useAPICallBody()
+    const {callAPI:getIsPrivate} = useAPICallBody()
     const {getCurrentEvents:alter} = useAlterEvents()
+    const {callAPI:getFollowRequests} = useAPICallBody()
+    const {callAPI:getLikeNotifications} = useAPICallBody()
+    const {callAPI:getCommentNotifications} = useAPICallBody()
     const [displayInfo, setDisplayInfo] = useState()
     const [displayedEvents, setDisplayedEvents] = useState()
     const [commentsOpen, setCommentsOpen] = useState(false)
+    const [isPrivate, setIsPrivate] = useState(false)
     const [selectedCommentsEventname, setSelectedCommentsEventname] = useState()
     const [selectedCommentsUsername ,setSelectedCommentsUsername] = useState()
     const[currentDate, setCurrentDate] = useState(Temporal.Now.plainDateISO())
+    const [followNotisCount, setFollowNotisCount] = useState(0);
+    const [eventNotis, setEventNotis] = useState();
+    const [eventNotisCount, setEventNotisCount] = useState(0);
+    const [followNotis, setFollowNotis] = useState();
+    const [notificationType, setNotificationType] = useState()
+    const [notificationsOpen, setNotificationsOpen] = useState(false)
 
     
     const pers = window.localStorage
@@ -54,12 +65,12 @@ const Social =() => {
             }
             else{
                 notBaseProcedure()
-            }
+            } 
         }
         refreshCount()
         getCurrentEvents()
+        console.log(isPrivate)
     },[])
-
     async function getCurrentEvents() {
         let temp = await alter(pers.getItem("username"), currentDate)
         console.log(temp, pers.getItem("username"))
@@ -89,11 +100,24 @@ const Social =() => {
             let nbFollowing = await getNonBaseFollowingRequest(`http://localhost:4000/api/users/isfollowing`, "POST", {forusername:username, followingusername:pers.getItem("contextUsername")})
             detIsFollowing(nbFollowing)
             let userInfo = await getNonBaseUserData(`http://localhost:4000/api/users/info`, "POST", {username})
+            let isPrivate = await getIsPrivate(`http://localhost:4000/api/users/isprivate`, "POST", {username})
             setDisplayInfo(userInfo[0])
+            setIsPrivate(isPrivate)
+            console.log(isPrivate)
             setIsLoading(false)
     }
     const baseProcedure = async()=>{
         let userInfo = await getBaseUserData(`http://localhost:4000/api/users/info`,"POST", {username})
+        let fr = await getFollowRequests(`http://localhost:4000/api/users/followrequests`, "POST", {username})
+        let frcount = fr.length
+        let f = await getFollowRequests(`http://localhost:4000/api/users/following`, "POST", {username})
+        let fcount = 0;
+        f.map((follow)=>{
+            if (follow.seen){
+                fcount = fcount + 1
+            }
+        })
+        setFollowNotis(fcount + frcount)
         setDisplayInfo(userInfo[0])
         setIsLoading(false)
     }
@@ -121,11 +145,17 @@ const Social =() => {
     }
 
     const handleFollow = async(updateFollow) =>{
-        ("calleddf")
         if (updateFollow){
-            let body = {follower:pers.getItem("contextUsername"), followed:pers.getItem("username")}
-            followRequest(`http://localhost:4000/api/users/follow/`, "POST", body)
-            setFollowers(followers + 1)
+            if (isPrivate){
+                let body = {requester:pers.getItem("contextUsername"), requested:pers.getItem("username")}
+                followRequest(`http://localhost:4000/api/users/followrequest`, "POST", body)
+
+            }
+            else{
+                let body = {follower:pers.getItem("contextUsername"), followed:pers.getItem("username")}
+                followRequest(`http://localhost:4000/api/users/follow/`, "POST", body)
+                setFollowers(followers + 1)
+            }
         }
         else
         {
@@ -149,6 +179,10 @@ const Social =() => {
         setFollowers(parseInt((followers[0])["count"]))
         setFollowing(parseInt((following[0])["count"]))
         setIsFollowingLoading(false)
+    }
+    function handleNotificationOpen(type){
+        setNotificationType(type)
+        setNotificationsOpen(true)
     }
         return (
                 <>
@@ -184,17 +218,32 @@ const Social =() => {
                     </Row>
                     {pers.getItem("contextUsername") == pers.getItem("username") ? <>
                         <Row className='my-5'>
-                            <Card className="noti-card border-dark">
+                            <div style={{padding:"8px", position:"relative"}}>
+                            {!isLoading && followNotis > 0 ?
+                                <><FontAwesomeIcon icon={faCircle} color='red' className='notification-badge'></FontAwesomeIcon>
+                                <Card.Text className='notifications-number-text'>{followNotis}</Card.Text></>:<></>
+                                
+                            }
+                            <Card className="noti-card border-dark" onClick={()=>handleNotificationOpen("follow")}>
                                 <div style={{display:'inline-flex'}}>
-                                <Col lg={{span:4, offset:3}}><Card.Title style={{marginTop:'auto', marginBottom:'auto'}}>Follow Requests</Card.Title></Col>
+                                <Col lg={{span:4, offset:3}}><Card.Title style={{marginTop:'auto', marginBottom:'auto'}}>Follow Notifications</Card.Title></Col>
                                     <Col lg={{span:2, offset:1}}>
                                         <FontAwesomeIcon icon={faHandshake} className='follow-request-icon'></FontAwesomeIcon>
                                     </Col>
+                                    <Col lg={{span:2}}>
+                                    </Col>
                                 </div>
                             </Card>
+                            </div>
                         </Row>
                         <Row>
-                            <Card className="noti-card border-dark">
+                            <div style={{padding:"8px", position:"relative"}}>
+                            {!isLoading && followNotis > 0 ?
+                                <><FontAwesomeIcon icon={faCircle} color='red' className='notification-badge'></FontAwesomeIcon>
+                                <Card.Text className='notifications-number-text'>{followNotis}</Card.Text></>:<></>
+                                
+                            }
+                            <Card className="noti-card border-dark" onClick={()=>handleNotificationOpen("event")}>
                                 <div style={{display:'inline-flex'}}>
                                 <Col lg={{span:4, offset:3}}><Card.Title style={{marginTop:'auto', marginBottom:'auto'}}>Event Interactions</Card.Title></Col>
                                     <Col lg={{span:2, offset:1}}>
@@ -202,26 +251,30 @@ const Social =() => {
                                     </Col>
                                 </div>
                             </Card>
+                            </div>
                         </Row>
-                        </>:<></>}
+                        </>
+                        :<></>}
                             </>
-                        }
+                    }               
 
                     </Col>
-                    <Col lg={{span:8}}>
-                    <div className="dailyview-events">
-                        {!isLoadingEvents &&
-                        displayedEvents.map((event) => (
-                            <DailyViewCard props={event} handleComment = {handleCommentOpen}></DailyViewCard>
-                        ))}
-                    </div>
-                    </Col>
-
+                    {(!isLoading && ((pers.getItem("contextUsername") == username) || !isPrivate ))?
+                        <Col lg={{span:8}}>
+                        <div className="dailyview-events">
+                            {!isLoadingEvents &&
+                            displayedEvents.map((event) => (
+                                <DailyViewCard props={event} handleComment = {handleCommentOpen}></DailyViewCard>
+                            ))}
+                        </div>
+                        </Col>:<></>
+                    }
                 </Row>
                 </Container>
                 {open && <FolPopup className="fol-popup-social" trigger={true} folswitch={followerSwitch} handleClose={handleClose} username={username}>
                 // </FolPopup>}
                 {commentsOpen ? <CommentView handleClose ={handleCommentClose} username={selectedCommentsUsername} eventname={selectedCommentsEventname}></CommentView> : ""}
+                {notificationsOpen ? <NotificationsSideBar></NotificationsSideBar>:<></>}
                 </>
                 
 
