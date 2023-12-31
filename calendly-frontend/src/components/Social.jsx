@@ -45,10 +45,10 @@ const Social =() => {
     const [selectedCommentsEventname, setSelectedCommentsEventname] = useState()
     const [selectedCommentsUsername ,setSelectedCommentsUsername] = useState()
     const[currentDate, setCurrentDate] = useState(Temporal.Now.plainDateISO())
-    const [followNotisCount, setFollowNotisCount] = useState(0);
-    const [eventNotis, setEventNotis] = useState();
-    const [eventNotisCount, setEventNotisCount] = useState(0);
-    const [followNotis, setFollowNotis] = useState();
+    const [followRequests, setFollowRequests] = useState()
+    const [notisCount, setNotisCount] = useState(0);
+    const [notis, setNotis] = useState();
+    const [followReqNotis, setFollowReqNotis] = useState();
     const [notificationType, setNotificationType] = useState()
     const [notificationsOpen, setNotificationsOpen] = useState(false)
 
@@ -103,21 +103,25 @@ const Social =() => {
             let isPrivate = await getIsPrivate(`http://localhost:4000/api/users/isprivate`, "POST", {username})
             setDisplayInfo(userInfo[0])
             setIsPrivate(isPrivate)
-            console.log(isPrivate)
             setIsLoading(false)
     }
     const baseProcedure = async()=>{
         let userInfo = await getBaseUserData(`http://localhost:4000/api/users/info`,"POST", {username})
         let fr = await getFollowRequests(`http://localhost:4000/api/users/followrequests`, "POST", {username})
+        setFollowReqNotis(fr)
+        console.log(fr, "ASGAS")
         let frcount = fr.length
-        let f = await getFollowRequests(`http://localhost:4000/api/users/following`, "POST", {username})
+        let f = await getFollowRequests(`http://localhost:4000/api/users/notifications`, "POST", {username})
         let fcount = 0;
         f.map((follow)=>{
             if (follow.seen){
                 fcount = fcount + 1
             }
         })
-        setFollowNotis(fcount + frcount)
+        setNotis(f);
+        console.log(fcount + frcount)
+        setNotisCount(fcount + frcount)
+        console.log(fcount + frcount)
         setDisplayInfo(userInfo[0])
         setIsLoading(false)
     }
@@ -184,6 +188,9 @@ const Social =() => {
         setNotificationType(type)
         setNotificationsOpen(true)
     }
+    function closeNotificationTab(){
+        setNotificationsOpen(false)
+    }
         return (
                 <>
                 <Sidebar/>
@@ -219,9 +226,9 @@ const Social =() => {
                     {pers.getItem("contextUsername") == pers.getItem("username") ? <>
                         <Row className='my-5'>
                             <div style={{padding:"8px", position:"relative"}}>
-                            {!isLoading && followNotis > 0 ?
+                            {!isLoading && notisCount > 0 ?
                                 <><FontAwesomeIcon icon={faCircle} color='red' className='notification-badge'></FontAwesomeIcon>
-                                <Card.Text className='notifications-number-text'>{followNotis}</Card.Text></>:<></>
+                                <Card.Text className='notifications-number-text'>{notisCount}</Card.Text></>:<></>
                                 
                             }
                             <Card className="noti-card border-dark" onClick={()=>handleNotificationOpen("follow")}>
@@ -231,23 +238,6 @@ const Social =() => {
                                         <FontAwesomeIcon icon={faHandshake} className='follow-request-icon'></FontAwesomeIcon>
                                     </Col>
                                     <Col lg={{span:2}}>
-                                    </Col>
-                                </div>
-                            </Card>
-                            </div>
-                        </Row>
-                        <Row>
-                            <div style={{padding:"8px", position:"relative"}}>
-                            {!isLoading && followNotis > 0 ?
-                                <><FontAwesomeIcon icon={faCircle} color='red' className='notification-badge'></FontAwesomeIcon>
-                                <Card.Text className='notifications-number-text'>{followNotis}</Card.Text></>:<></>
-                                
-                            }
-                            <Card className="noti-card border-dark" onClick={()=>handleNotificationOpen("event")}>
-                                <div style={{display:'inline-flex'}}>
-                                <Col lg={{span:4, offset:3}}><Card.Title style={{marginTop:'auto', marginBottom:'auto'}}>Event Interactions</Card.Title></Col>
-                                    <Col lg={{span:2, offset:1}}>
-                                        <FontAwesomeIcon icon={faCircleExclamation} className='follow-request-icon'></FontAwesomeIcon>
                                     </Col>
                                 </div>
                             </Card>
@@ -274,7 +264,7 @@ const Social =() => {
                 {open && <FolPopup className="fol-popup-social" trigger={true} folswitch={followerSwitch} handleClose={handleClose} username={username}>
                 // </FolPopup>}
                 {commentsOpen ? <CommentView handleClose ={handleCommentClose} username={selectedCommentsUsername} eventname={selectedCommentsEventname}></CommentView> : ""}
-                {notificationsOpen ? <NotificationsSideBar></NotificationsSideBar>:<></>}
+                {notificationsOpen && !isLoading ? <NotificationsSideBar type={notificationType} data={notis} followRequests={followReqNotis} close={closeNotificationTab}></NotificationsSideBar>:<></>}
                 </>
                 
 

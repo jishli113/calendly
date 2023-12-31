@@ -39,7 +39,6 @@ router.route('/default').post(upload.single(), async (req,res) =>{
         return res.json({status:"success", data:newUser.rows[0]})
     }).catch(function(error){
         console.error(error.message)
-        (error.code, "ERRORCODE")
         let msg = "Registration Failed"
         if (error.code === "auth/email-already-in-use"){
             msg = "Email already has an account registered"

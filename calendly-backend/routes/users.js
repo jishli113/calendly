@@ -133,9 +133,25 @@ router.route('/isfollowing').post(async(req,res)=>{
 router.route('/follow').post(async(req,res)=>{
   try {
       const {follower, followed} = req.body
-      const response = await pool.query(
-          "INSERT INTO following (forusername, followingusername) VALUES($1,$2, false)",[followed, follower]
+      let ispriv = await pool.query(
+        "SELECT private FROM settings WHERE username = $1", [followed]
       )
+      let response = undefined
+      console.log(ispriv.rows)
+      if (ispriv.rows[0].private === true){
+            response = await pool.query(
+            "INSERT INTO followrequests (requester, requested) VALUES($1, $2)", [follower, followed]
+        )
+      }
+      else{
+            response = await pool.query(
+            "INSERT INTO following (forusername, followingusername) VALUES($1,$2)",[followed, follower]
+        )
+        const msg = `${follower} started following you.`
+        await pool.query(
+            "INSERT INTO eventnotifications (for, interactor, seen, message, ts) VALUES($1, $2, $3, $4, NOW() AT TIME ZONE 'UTC')", [followed, follower, false, msg]
+        )
+      }
       res.json(response.rows)
   } catch (error) {
       console.error(error.message)
@@ -212,17 +228,6 @@ router.route('/isprivate').post(async(req,res)=>{
     }
 
 })
-router.route('/followrequest').post(async(req,res)=>{
-    try {
-        const {requester, requested} = req.body
-        await pool.query(
-            "INSERT INTO followrequests (requester, requested) VALUES($1, $2)", [requester, requested]
-        )
-    } catch (error) {
-        console.error(error.message)
-    }
-
-})
 router.route('/followrequests').post(async(req,res)=>{
     try {
         const {username} = req.body
@@ -230,6 +235,47 @@ router.route('/followrequests').post(async(req,res)=>{
             "SELECT * FROM followrequests WHERE requested = $1",[username]
         )
         console.log(r.rows)
+        res.json(r.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+router.route('/acceptfollowrequest').post(async(req,res)=>{
+    try {
+        console.log(">??")
+        const {requester, requested} = req.body
+        let r = await pool.query(
+            "DELETE FROM followrequests WHERE requester = $1 AND requested = $2",[requester, requested]
+        )
+        let r2 = await pool.query(
+            "INSERT INTO following (forusername, followingusername) VALUES($1, $2)",[requested, requester]
+        )
+        const msg = `${requester} started following you.`
+        console.log(msg)
+        await pool.query(
+            "INSERT INTO eventnotifications (forusername, interactor, seen, message, ts) VALUES($1, $2, $3, $4, NOW() AT TIME ZONE 'UTC')", [requested, requester, false, msg]
+        )
+        res.sendStatus(200)
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+router.route('/declinefollowrequest').post(async(req,res)=>{
+    try {
+        const {requester, requested} = req.body
+        let r = await pool.query(
+            "DELETE FROM followrequests WHERE requester = $1 AND requested = $2",[requester, requested]
+        )
+    } catch (error) {
+        console.error(error.message)
+    }
+})
+router.route('/notifications').post(async(req, res)=>{
+    try {
+        const{username} = req.body
+        let r = await pool.query(
+            "SELECT * FROM eventnotifications WHERE forusername = $1 ORDER BY ts", [username]
+        )
         res.json(r.rows)
     } catch (error) {
         console.error(error.message)

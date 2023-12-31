@@ -1,20 +1,50 @@
 .notification-popup-inner{
     position: relative;
-    padding: 32px;
     width: 30%;
     height: 100%;
     margin-right: 0;
-    max-width: 300px;
+    max-width: 350px;
     background-color: white;
     border-style:solid;
     border-color: #96613d;
     animation: fade-in 0.2s ease-in;
+    z-index: 900;
+}
+.notification-popup-inner-frq{
+    position: relative;
+    width: 30%;
+    height: 100%;
+    margin-right: 0;
+    max-width: 350px;
+    background-color: white;
+    border-style:solid;
+    border-color: #96613d;
+    animation: fade-in 0.2s ease-in;
+    z-index: 901;
 }
 @keyframes fade-in{
     0%{
-        margin-right: -300px;
+        margin-right: -350px;
     }
     100%{
         transform: translateX(0px);
     }
+}
+.follow-request-text{
+    font-size: 30px;
+}
+.position-relative{
+    position: relative;
+}
+.follow-request-badge{
+    position:absolute;
+    right: 10%;
+    top: 20%;
+    height: 30px;
+}
+.follow-request-badge-number{
+    position:absolute;
+    right:13%;
+    top:22%;
+    font-size: 15px;
 }
