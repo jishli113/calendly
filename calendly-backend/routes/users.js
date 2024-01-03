@@ -255,7 +255,7 @@ router.route('/acceptfollowrequest').post(async(req,res)=>{
         await pool.query(
             "INSERT INTO eventnotifications (forusername, interactor, seen, message, ts) VALUES($1, $2, $3, $4, NOW() AT TIME ZONE 'UTC')", [requested, requester, false, msg]
         )
-        res.sendStatus(200)
+        res.json(200)
     } catch (error) {
         console.error(error.message)
     }
@@ -274,7 +274,7 @@ router.route('/notifications').post(async(req, res)=>{
     try {
         const{username} = req.body
         let r = await pool.query(
-            "SELECT * FROM eventnotifications WHERE forusername = $1 ORDER BY ts", [username]
+            "SELECT forusername, interactor, seen, message, time_from_timestamp(ts) AS time FROM eventnotifications WHERE forusername = $1 ORDER BY ts DESC", [username]
         )
         res.json(r.rows)
     } catch (error) {

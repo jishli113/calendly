@@ -85,6 +85,7 @@
     width: 100px;
     height: 100px;
     opacity: 0.5;
+    z-index: 1;
 }
 .non-active-cover{
     position: absolute;
@@ -95,6 +96,8 @@
     pointer-events: none;
     background-color: gray;
     opacity: 0.5;
+    z-index: 1;
+
 }
 .non-active-lock-logo{
     height: 80px;

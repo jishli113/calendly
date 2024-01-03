@@ -15,30 +15,32 @@ const NotificationsSideBar = (props) =>{
     const [followRequests, setFollowRequests] = useState()
     const [followRequestBar, setFollowRequestBar] = useState(false)
     const [followRequestNum, setFollowRequestNum] = useState(0)
+    const [isLoading, setIsLoading] = useState(true)
     const {callAPI} = useAPICallBody()
     const pers = window.localStorage
     useEffect(()=>{
-        console.log(props.data, "dat")
         setType(props.type)
         setData(props.data)
             setFollowRequests(props.followRequests)
             setFollowRequestNum(props.followRequests.length)
+        setIsLoading(false)
     },[])
+    useEffect(()=>{ 
+        console.log(data != undefined && !isLoading) 
+    },[data])
     function handleFollowRequestBar(update){
         setFollowRequestBar(update)
         console.log(followRequests)
     }
     async function removeFollowRequest(index){
         let copy = followRequests
-        console.log(followRequestNum, "mnum")
         delete copy[index]
         setFollowRequests(copy)
         setFollowRequestNum(followRequestNum - 1)
-        console.log(copy)
-        console.log(copy.length, "len")
         const res = await callAPI(`http://localhost:4000/api/users/notifications`, "POST",{username:pers.getItem("username")}) 
-        console.log(res, "ADSGASDHhu")
         setData(res)
+        setIsLoading(false)
+        console.log(res, "upd")
     }
     return(
         <div className='fol-popup'>
@@ -51,7 +53,7 @@ const NotificationsSideBar = (props) =>{
                 {props.type == "follow" && followRequests != undefined && followRequestNum > 0 ?
                 <>
                     <Row>
-                        <Card className='position-absolute' onClick = {()=>handleFollowRequestBar(!followRequestBar)}>
+                        <Card onClick = {()=>handleFollowRequestBar(!followRequestBar)}>
                             <Card.Text className='follow-request-text'>
                                 Follow Requests
                             </Card.Text>
@@ -62,17 +64,18 @@ const NotificationsSideBar = (props) =>{
                 </>:<></>}
                 {followRequestBar ? 
                 <>
+                <Row>
                     {followRequests.map((request, index)=>(
                         <FollowRequestTab remove = {removeFollowRequest} requester={request.requester} requested = {request.requested} index={index}></FollowRequestTab>
                     ))}
+                </Row>
             </>:<></>}
                 <Row>
-                    {data != undefined && data.map((request)=>{
+                    {data != undefined && !isLoading ? data.map((request)=>(
                         <>
-                        ASDFAS
                         <NotificationTab message={request.message} time={request.time}></NotificationTab>
                         </>
-                    })}
+                    )):<></>}
                 </Row>
             </Container>
         </div>

@@ -10,8 +10,9 @@ const FollowRequestTab = (props) =>{
         setRequestResolved(true)
         setAreFriends(true)
         console.log(props.index)
-        props.remove(props.index)
         await callAPI(`http://localhost:4000/api/users/acceptfollowrequest`,"POST", {requested:props.requested, requester:props.requester})
+        console.log("hey")
+        props.remove(props.index)
         console.log(requestResolved, areFriends)
     }
     async function declineFollowRequest(){
@@ -28,8 +29,8 @@ const FollowRequestTab = (props) =>{
     }
     return(
         <>
-            <Row className='my-4'>
-            <Card style={{padding:"4px"}}>
+            <Row >
+            <Card >
                 <Row>
                     <Col lg={{span:4}}>
                         <Card.Text>{props.requester}</Card.Text>
